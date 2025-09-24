@@ -72,10 +72,18 @@ Each method supports query parameterization using dynamic expressions and authen
 
 ## Prerequisites
 
-This n8n community node requires a running FirstSpirit server with the FirstSpirit REST API module installed and configured.
-The FirstSpirit server must be exposed to n8n using a tool like `ngrok`.
+Before using this n8n community node, ensure the following components are available:
 
-See the README.md for further instructions.
+- **FirstSpirit**: 2025.2 or higher
+- **Application Server**: Custom Apache Tomcat
+- **Module**: FirstSpirit-REST-0.0.1.fsm.
+
+Download the module from the [Crownpeak download portal](https://file.crownpeak.com/) under `custom-downloads/Module/FirstSpirit REST`.
+If you do not have access, please contact [support@crownpeak.com](mailto:support@crownpeak.com).
+
+Please refer to the README.md file for detailed setup and configuration steps.
+
+> ℹ️ To enable communication, the FirstSpirit server must be made accessible to n8n, for example by using a tunneling tool such as ngrok.
 
 ## Installation & Usage
 
