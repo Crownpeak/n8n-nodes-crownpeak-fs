@@ -28,7 +28,7 @@ This module is useful for organizations looking to build automated content pipel
 
 | Resource       | Operations Supported            |
 |----------------|---------------------------------|
-| Media          | Get, Create, Upload                |
+| Media          | Get, Create, Upload             |
 | Search         | Search                          |
 | Page Reference | List, Create, Get               |
 | Template       | List, Create                    |
@@ -74,14 +74,21 @@ Each method supports query parameterization using dynamic expressions and authen
 
 Before using this n8n community node, ensure the following components are available:
 
-- **FirstSpirit**: 2025.2 or higher
-- **Application Server**: Custom Apache Tomcat
-- **Module**: FirstSpirit-REST-0.0.1.fsm.
+- **FirstSpirit**: 2025.7 or higher
+- **Application Server**: Standalone Apache Tomcat
+- **Module**: FirstSpirit-REST-0.0.1.fsm
 
-Download the module from the [Crownpeak download portal](https://file.crownpeak.com/) under `custom-downloads/Module/FirstSpirit REST`.
+Download the module from the [Crownpeak download portal](https://file.crownpeak.com/) under `custom-download/Modules/REST`.
 If you do not have access, please contact [support@crownpeak.com](mailto:support@crownpeak.com).
 
 Please refer to the README.md file for detailed setup and configuration steps.
+
+> ⚠️ **Important Notice**
+>
+> The FirstSpirit REST module is a **prototype** and currently **under active development**.
+>
+> Functionality, APIs, and compatibility are subject to change without notice.
+> **Do not use in production environments**.
 
 > ℹ️ To enable communication, the FirstSpirit server must be made accessible to n8n, for example by using a tunneling tool such as ngrok.
 
