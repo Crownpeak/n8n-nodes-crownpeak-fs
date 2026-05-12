@@ -71,6 +71,10 @@ export class CrownpeakFS implements INodeType {
 						name: 'Project',
 						value: 'project',
 					},
+					{
+						name: 'Module',
+						value: 'module',
+					},
 				],
 				default: 'project',
 			},
@@ -361,6 +365,26 @@ export class CrownpeakFS implements INodeType {
 						value: 'searchProject',
 						action: 'Search project',
 					},
+					{
+						name: 'Search For Invalid References',
+						value: 'searchInvalidReferences',
+						action: 'Search for invalid (broken) references in project',
+					},
+					{
+						name: 'Search For External References',
+						value: 'searchExternalReferences',
+						action: 'Search for external references in project',
+					},
+					{
+						name: 'Search By Element UID',
+						value: 'searchByUid',
+						action: 'Search for an element by its UID',
+					},
+					{
+						name: 'Search By Element ID',
+						value: 'searchByElementId',
+						action: 'Search for an element by its ID',
+					},
 				],
 				default: 'searchProject',
 			},
@@ -387,6 +411,40 @@ export class CrownpeakFS implements INodeType {
 					},
 				],
 				default: 'listScripts',
+			},
+			{
+				displayName: 'Operation',
+				name: 'operation',
+				type: 'options',
+				noDataExpression: true,
+				displayOptions: {
+					show: {
+						resource: ['module'],
+					},
+				},
+				options: [
+					{
+						name: 'List Installed Modules',
+						value: 'listModules',
+						action: 'Get all installed FirstSpirit modules',
+					},
+					{
+						name: 'Install Module',
+						value: 'installModule',
+						action: 'Install a FirstSpirit module',
+					},
+					{
+						name: 'Get Module',
+						value: 'getModule',
+						action: 'Get a single installed FirstSpirit module',
+					},
+					{
+						name: 'Uninstall Module',
+						value: 'uninstallModule',
+						action: 'Uninstall a FirstSpirit module',
+					},
+				],
+				default: 'listModules',
 			},
 			{
 				displayName: 'Operation',
@@ -608,6 +666,11 @@ export class CrownpeakFS implements INodeType {
 						name: 'Set Format Template Channel Source',
 						value: 'setFormatTemplateChannelSource',
 						action: 'Set a specific channel source of a format template',
+					},
+					{
+						name: 'Get Format Template GOM Form',
+						value: 'getFormatTemplateGomForm',
+						action: 'Get the GOM form definition of a format template',
 					},
 					{
 						name: 'List Database Schemas',
@@ -940,6 +1003,7 @@ export class CrownpeakFS implements INodeType {
 							'listFormatTemplateChannelSources',
 							'getFormatTemplateChannelSource',
 							'setFormatTemplateChannelSource',
+							'getFormatTemplateGomForm',
 						],
 					},
 				},
@@ -1093,6 +1157,66 @@ export class CrownpeakFS implements INodeType {
 					},
 				},
 				description: 'Raw JSON for the request body',
+			},
+			{
+				displayName: 'Element UID',
+				name: 'elementUid',
+				type: 'string',
+				required: true,
+				default: '',
+				displayOptions: {
+					show: {
+						resource: ['search'],
+						operation: ['searchByUid'],
+					},
+				},
+				placeholder: 'Enter the element UID',
+				description: 'The UID of the element to search for',
+			},
+			{
+				displayName: 'Element ID',
+				name: 'elementId',
+				type: 'string',
+				required: true,
+				default: '',
+				displayOptions: {
+					show: {
+						resource: ['search'],
+						operation: ['searchByElementId'],
+					},
+				},
+				placeholder: 'Enter the element ID',
+				description: 'The numeric ID of the element to search for',
+			},
+			{
+				displayName: 'Module Name',
+				name: 'moduleName',
+				type: 'string',
+				required: true,
+				default: '',
+				displayOptions: {
+					show: {
+						resource: ['module'],
+						operation: ['getModule', 'uninstallModule'],
+					},
+				},
+				placeholder: 'Enter the module name',
+				description: 'The name of the FirstSpirit module (FSM)',
+			},
+			{
+				displayName: 'Module Binary Field',
+				name: 'moduleBinaryField',
+				type: 'string',
+				required: true,
+				default: 'data',
+				displayOptions: {
+					show: {
+						resource: ['module'],
+						operation: ['installModule'],
+					},
+				},
+				placeholder: 'data',
+				description: 'Name of the binary property in the input item that contains the FSM file to install',
 			},
 		],
 	};
@@ -1259,6 +1383,32 @@ export class CrownpeakFS implements INodeType {
 					const size = this.getNodeParameter('pageSize', i) as string;
 					const searchParams = new URLSearchParams({ q, page, size });
 					url = `${baseUrl}/v1/projects/${id}/search?${searchParams.toString()}`;
+					method = 'GET';
+					break;
+				}
+				case 'searchInvalidReferences': {
+					const id = this.getNodeParameter('projectId', i) as string;
+					url = `${baseUrl}/v1/projects/${id}/search/invalid-references`;
+					method = 'GET';
+					break;
+				}
+				case 'searchExternalReferences': {
+					const id = this.getNodeParameter('projectId', i) as string;
+					url = `${baseUrl}/v1/projects/${id}/search/external-references`;
+					method = 'GET';
+					break;
+				}
+				case 'searchByUid': {
+					const id = this.getNodeParameter('projectId', i) as string;
+					const uid = this.getNodeParameter('elementUid', i) as string;
+					url = `${baseUrl}/v1/projects/${id}/search/by-uid?uid=${encodeURIComponent(uid)}`;
+					method = 'GET';
+					break;
+				}
+				case 'searchByElementId': {
+					const id = this.getNodeParameter('projectId', i) as string;
+					const elementId = this.getNodeParameter('elementId', i) as string;
+					url = `${baseUrl}/v1/projects/${id}/search/by-id/${encodeURIComponent(elementId)}`;
 					method = 'GET';
 					break;
 				}
@@ -1685,6 +1835,13 @@ export class CrownpeakFS implements INodeType {
 					method = 'PUT';
 					break;
 				}
+				case 'getFormatTemplateGomForm': {
+					const id = this.getNodeParameter('projectId', i) as string;
+					const formatTemplateUid = this.getNodeParameter('formatTemplateUid', i) as string;
+					url = `${baseUrl}/v1/projects/${id}/templates/format-templates/${formatTemplateUid}/gom/form`;
+					method = 'GET';
+					break;
+				}
 
 				case 'listSchemas': {
 					const id = this.getNodeParameter('projectId', i) as string;
@@ -1897,6 +2054,38 @@ export class CrownpeakFS implements INodeType {
 					method = 'GET';
 					break;
 				}
+				case 'listModules': {
+					url = `${baseUrl}/v1/modules/`;
+					method = 'GET';
+					break;
+				}
+				case 'getModule': {
+					const moduleName = this.getNodeParameter('moduleName', i) as string;
+					url = `${baseUrl}/v1/modules/${encodeURIComponent(moduleName)}`;
+					method = 'GET';
+					break;
+				}
+				case 'uninstallModule': {
+					const moduleName = this.getNodeParameter('moduleName', i) as string;
+					url = `${baseUrl}/v1/modules/${encodeURIComponent(moduleName)}`;
+					method = 'DELETE';
+					break;
+				}
+				case 'installModule': {
+					const moduleBinaryField = this.getNodeParameter('moduleBinaryField', i) as string;
+					const binaryData = this.helpers.assertBinaryData(i, moduleBinaryField);
+					const fileBuffer = await this.helpers.getBinaryDataBuffer(i, moduleBinaryField);
+					const fileName = binaryData.fileName ?? 'module.fsm';
+
+					const formData = new FormData();
+					formData.append('file', fileBuffer, fileName);
+
+					url = `${baseUrl}/v1/modules/`;
+					body = formData;
+					method = 'POST';
+					break;
+				}
+
 				default:
 					throw new NodeOperationError(this.getNode(), `Unsupported operation: ${operation}`);
 			}

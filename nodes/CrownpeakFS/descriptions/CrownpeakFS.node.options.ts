@@ -83,6 +83,26 @@ export const crownpeakFSOperations: INodeProperties[] = [
 				action: 'Search in FirstSpirit project',
 			},
 			{
+				name: 'Search For Invalid References',
+				value: 'searchInvalidReferences',
+				action: 'Search for invalid (broken) references in a FirstSpirit project',
+			},
+			{
+				name: 'Search For External References',
+				value: 'searchExternalReferences',
+				action: 'Search for external references in a FirstSpirit project',
+			},
+			{
+				name: 'Search By Element UID',
+				value: 'searchByUid',
+				action: 'Search for an element by its UID in a FirstSpirit project',
+			},
+			{
+				name: 'Search By Element ID',
+				value: 'searchByElementId',
+				action: 'Search for an element by its ID in a FirstSpirit project',
+			},
+			{
 				name: 'List FirstSpirit Page References',
 				value: 'listPageReferences',
 				action: 'List FirstSpirit page references',
@@ -358,6 +378,11 @@ export const crownpeakFSOperations: INodeProperties[] = [
 				action: 'Set a specific channel source of a FirstSpirit format template',
 			},
 			{
+				name: 'Get Format Template GOM Form',
+				value: 'getFormatTemplateGomForm',
+				action: 'Get the GOM form definition of a FirstSpirit format template',
+			},
+			{
 				name: 'List FirstSpirit Database Schemas',
 				value: 'listSchemas',
 				action: 'List FirstSpirit database schemas',
@@ -456,6 +481,27 @@ export const crownpeakFSOperations: INodeProperties[] = [
 				name: 'Get Project Resolutions',
 				value: 'getProjectResolutions',
 				action: 'Get resolutions of a FirstSpirit project',
+			},
+
+			{
+				name: 'List Installed FirstSpirit Modules',
+				value: 'listModules',
+				action: 'Get all installed FirstSpirit modules',
+			},
+			{
+				name: 'Install FirstSpirit Module',
+				value: 'installModule',
+				action: 'Install a FirstSpirit module',
+			},
+			{
+				name: 'Get FirstSpirit Module',
+				value: 'getModule',
+				action: 'Get a single installed FirstSpirit module',
+			},
+			{
+				name: 'Uninstall FirstSpirit Module',
+				value: 'uninstallModule',
+				action: 'Uninstall a FirstSpirit module',
 			},
 		],
 		default: 'listProjects',
