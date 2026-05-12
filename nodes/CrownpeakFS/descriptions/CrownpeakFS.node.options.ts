@@ -633,6 +633,46 @@ export const crownpeakFSOperations: INodeProperties[] = [
 				value: 'renameMediumFolder',
 				action: 'Rename a medium folder',
 			},
+			{
+				name: 'Create FirstSpirit Project',
+				value: 'createProject',
+				action: 'Create a new FirstSpirit project',
+			},
+			{
+				name: 'Delete FirstSpirit Project',
+				value: 'deleteProject',
+				action: 'Delete a FirstSpirit project',
+			},
+			{
+				name: 'Get Project Settings',
+				value: 'getProjectSettings',
+				action: 'Get settings for a FirstSpirit project',
+			},
+			{
+				name: 'List Project Languages',
+				value: 'listProjectLanguages',
+				action: 'Get all languages for a FirstSpirit project',
+			},
+			{
+				name: 'Get Project Language',
+				value: 'getProjectLanguage',
+				action: 'Get a single language for a FirstSpirit project',
+			},
+			{
+				name: 'List Template Sets',
+				value: 'listTemplateSets',
+				action: 'Get all template sets for a FirstSpirit project',
+			},
+			{
+				name: 'Get Template Set',
+				value: 'getTemplateSet',
+				action: 'Get a single template set for a FirstSpirit project',
+			},
+			{
+				name: 'Set Format Template GOM',
+				value: 'setFormatTemplateGom',
+				action: 'Set the GOM definition of a FirstSpirit format template',
+			},
 		],
 		default: 'listProjects',
 	},

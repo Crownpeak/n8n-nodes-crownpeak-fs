@@ -191,14 +191,49 @@ export class CrownpeakFS implements INodeType {
 						action: 'List projects',
 					},
 					{
+						name: 'Create Project',
+						value: 'createProject',
+						action: 'Create a new FirstSpirit project',
+					},
+					{
 						name: 'Get Project',
 						value: 'getProject',
 						action: 'Get project',
 					},
 					{
+						name: 'Delete Project',
+						value: 'deleteProject',
+						action: 'Delete a FirstSpirit project',
+					},
+					{
 						name: 'Get Project Resolutions',
 						value: 'getProjectResolutions',
 						action: 'Get project resolutions',
+					},
+					{
+						name: 'Get Project Settings',
+						value: 'getProjectSettings',
+						action: 'Get project settings',
+					},
+					{
+						name: 'List Project Languages',
+						value: 'listProjectLanguages',
+						action: 'Get all languages for a project',
+					},
+					{
+						name: 'Get Project Language',
+						value: 'getProjectLanguage',
+						action: 'Get a single language for a project',
+					},
+					{
+						name: 'List Template Sets',
+						value: 'listTemplateSets',
+						action: 'Get all template sets for a project',
+					},
+					{
+						name: 'Get Template Set',
+						value: 'getTemplateSet',
+						action: 'Get a single template set for a project',
 					},
 				],
 				default: 'listProjects',
@@ -857,6 +892,11 @@ export class CrownpeakFS implements INodeType {
 						action: 'Get the GOM form definition of a format template',
 					},
 					{
+						name: 'Set Format Template GOM',
+						value: 'setFormatTemplateGom',
+						action: 'Set the GOM definition of a format template',
+					},
+					{
 						name: 'List Database Schemas',
 						value: 'listSchemas',
 						action: 'List database schemas',
@@ -1196,6 +1236,7 @@ export class CrownpeakFS implements INodeType {
 							'getFormatTemplateChannelSource',
 							'setFormatTemplateChannelSource',
 							'getFormatTemplateGomForm',
+							'setFormatTemplateGom',
 						],
 					},
 				},
@@ -1331,7 +1372,7 @@ export class CrownpeakFS implements INodeType {
 				},
 				displayOptions: {
 					show: {
-						resource: ['page', 'pageReference', 'script', 'template', 'media'],
+						resource: ['page', 'pageReference', 'script', 'template', 'media', 'project'],
 						operation: [
 							'createMedium',
 							'executeActionsOnMedium',
@@ -1361,6 +1402,8 @@ export class CrownpeakFS implements INodeType {
 							'setLinkTemplateChannelSource',
 							'createFormatTemplate',
 							'setFormatTemplateChannelSource',
+							'setFormatTemplateGom',
+							'createProject',
 						],
 					},
 				},
@@ -1560,6 +1603,36 @@ export class CrownpeakFS implements INodeType {
 					},
 				},
 				description: 'Raw JSON for the request body',
+			},
+			{
+				displayName: 'Language Abbreviation',
+				name: 'languageAbbreviation',
+				type: 'string',
+				required: true,
+				default: '',
+				displayOptions: {
+					show: {
+						resource: ['project'],
+						operation: ['getProjectLanguage'],
+					},
+				},
+				placeholder: 'e.g. EN',
+				description: 'The abbreviation of the language to retrieve',
+			},
+			{
+				displayName: 'Template Set Abbreviation',
+				name: 'templateSetAbbreviation',
+				type: 'string',
+				required: true,
+				default: '',
+				displayOptions: {
+					show: {
+						resource: ['project'],
+						operation: ['getTemplateSet'],
+					},
+				},
+				placeholder: 'e.g. html',
+				description: 'The abbreviation of the template set to retrieve',
 			},
 		],
 	};
@@ -2633,6 +2706,61 @@ export class CrownpeakFS implements INodeType {
 					url = `${baseUrl}/v1/projects/${id}/medium-folders/${folderPath}`;
 					body = JSON.parse(content);
 					method = 'PATCH';
+					break;
+				}
+
+				case 'createProject': {
+					const content = this.getNodeParameter('content', i) as string;
+					url = `${baseUrl}/v1/projects/`;
+					body = JSON.parse(content);
+					method = 'POST';
+					break;
+				}
+				case 'deleteProject': {
+					const id = this.getNodeParameter('projectId', i) as string;
+					url = `${baseUrl}/v1/projects/${id}`;
+					method = 'DELETE';
+					break;
+				}
+				case 'getProjectSettings': {
+					const id = this.getNodeParameter('projectId', i) as string;
+					url = `${baseUrl}/v1/projects/${id}/settings`;
+					method = 'GET';
+					break;
+				}
+				case 'listProjectLanguages': {
+					const id = this.getNodeParameter('projectId', i) as string;
+					url = `${baseUrl}/v1/projects/${id}/languages/`;
+					method = 'GET';
+					break;
+				}
+				case 'getProjectLanguage': {
+					const id = this.getNodeParameter('projectId', i) as string;
+					const languageAbbreviation = this.getNodeParameter('languageAbbreviation', i) as string;
+					url = `${baseUrl}/v1/projects/${id}/languages/${encodeURIComponent(languageAbbreviation)}`;
+					method = 'GET';
+					break;
+				}
+				case 'listTemplateSets': {
+					const id = this.getNodeParameter('projectId', i) as string;
+					url = `${baseUrl}/v1/projects/${id}/template-sets/`;
+					method = 'GET';
+					break;
+				}
+				case 'getTemplateSet': {
+					const id = this.getNodeParameter('projectId', i) as string;
+					const templateSetAbbreviation = this.getNodeParameter('templateSetAbbreviation', i) as string;
+					url = `${baseUrl}/v1/projects/${id}/template-sets/${encodeURIComponent(templateSetAbbreviation)}`;
+					method = 'GET';
+					break;
+				}
+				case 'setFormatTemplateGom': {
+					const id = this.getNodeParameter('projectId', i) as string;
+					const formatTemplateUid = this.getNodeParameter('formatTemplateUid', i) as string;
+					const content = this.getNodeParameter('content', i) as string;
+					url = `${baseUrl}/v1/projects/${id}/templates/format-templates/${formatTemplateUid}/gom`;
+					body = JSON.parse(content);
+					method = 'PUT';
 					break;
 				}
 
