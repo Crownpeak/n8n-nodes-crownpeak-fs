@@ -127,7 +127,7 @@ export const loadOptions = {
 		const response = await crownpeakApiRequest(
 			this,
 			'GET',
-			`/v1/projects/${projectId}/pages/${pageUid}/bodies`,
+			`/v1/projects/${projectId}/pages/${pageUid}/bodies/`,
 		);
 		const options = toNameValueOptions(asArray(response), ['name', 'displayName', 'uid', 'id'], [
 			'name',

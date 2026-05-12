@@ -15,7 +15,6 @@ import {
 	mediumLocator,
 	pageLocator,
 	pageReferenceLocator,
-	pageReferenceLocatorForActions,
 	projectLocator,
 	scriptLocator,
 	sectionLocator,
@@ -367,7 +366,6 @@ export class CrownpeakFS implements INodeType {
 			},
 			projectLocator,
 			pageReferenceLocator,
-			pageReferenceLocatorForActions,
 			mediumLocator,
 			{
 				displayName: 'Search Query',
@@ -562,7 +560,7 @@ export class CrownpeakFS implements INodeType {
 							type: this.getNodeParameter('type', i, '') as string,
 						};
 						const additional = this.getNodeParameter('additionalProperties', i, '{}') as string;
-						url = `${baseUrl}/v1/projects/${id}/media`;
+						url = `${baseUrl}/v1/projects/${id}/media/`;
 						body = buildRequestBody(typed, additional);
 						method = 'POST';
 						break;
@@ -634,7 +632,7 @@ export class CrownpeakFS implements INodeType {
 							location: this.getNodeParameter('location', i, '') as string,
 						};
 						const additional = this.getNodeParameter('additionalProperties', i, '{}') as string;
-						url = `${baseUrl}/v1/projects/${id}/page-references`;
+						url = `${baseUrl}/v1/projects/${id}/page-references/`;
 						body = buildRequestBody(typed, additional);
 						method = 'POST';
 						break;
@@ -648,7 +646,7 @@ export class CrownpeakFS implements INodeType {
 					}
 					case 'listSectionTemplates': {
 						const id = getLocatorValue(this.getNodeParameter('projectId', i));
-						url = `${baseUrl}/v1/projects/${id}/templates/section-templates`;
+						url = `${baseUrl}/v1/projects/${id}/templates/section-templates/`;
 						method = 'GET';
 						break;
 					}
@@ -660,14 +658,14 @@ export class CrownpeakFS implements INodeType {
 							description: this.getNodeParameter('description', i, '') as string,
 						};
 						const additional = this.getNodeParameter('additionalProperties', i, '{}') as string;
-						url = `${baseUrl}/v1/projects/${id}/templates/section-templates`;
+						url = `${baseUrl}/v1/projects/${id}/templates/section-templates/`;
 						body = buildRequestBody(typed, additional);
 						method = 'POST';
 						break;
 					}
 					case 'listPageTemplates': {
 						const id = getLocatorValue(this.getNodeParameter('projectId', i));
-						url = `${baseUrl}/v1/projects/${id}/templates/page-templates`;
+						url = `${baseUrl}/v1/projects/${id}/templates/page-templates/`;
 						method = 'GET';
 						break;
 					}
@@ -687,7 +685,7 @@ export class CrownpeakFS implements INodeType {
 							bodies: bodies.length > 0 ? bodies : undefined,
 						};
 						const additional = this.getNodeParameter('additionalProperties', i, '{}') as string;
-						url = `${baseUrl}/v1/projects/${id}/templates/page-templates`;
+						url = `${baseUrl}/v1/projects/${id}/templates/page-templates/`;
 						body = buildRequestBody(typed as IDataObject, additional);
 						method = 'POST';
 						break;
@@ -705,15 +703,13 @@ export class CrownpeakFS implements INodeType {
 					}
 					case 'executeActionsOnPage': {
 						const id = getLocatorValue(this.getNodeParameter('projectId', i));
-						const pageReferenceUid = getLocatorValue(
-							this.getNodeParameter('pageReferenceUid', i),
-						);
+						const pageUid = getLocatorValue(this.getNodeParameter('pageUid', i));
 						const action = this.getNodeParameter('action', i, 'copy') as string;
 						const releaseOptions =
 							action === 'release'
 								? (this.getNodeParameter('releaseOptions', i, {}) as IDataObject)
 								: undefined;
-						url = `${baseUrl}/v1/projects/${id}/page-references/${pageReferenceUid}/actions`;
+						url = `${baseUrl}/v1/projects/${id}/pages/${pageUid}/actions`;
 						body =
 							action === 'release' && releaseOptions && Object.keys(releaseOptions).length > 0
 								? { action, options: releaseOptions }
@@ -734,7 +730,7 @@ export class CrownpeakFS implements INodeType {
 							templateUid: getLocatorValue(this.getNodeParameter('templateUid', i)),
 						};
 						const additional = this.getNodeParameter('additionalProperties', i, '{}') as string;
-						url = `${baseUrl}/v1/projects/${id}/pages`;
+						url = `${baseUrl}/v1/projects/${id}/pages/`;
 						body = buildRequestBody(typed, additional);
 						method = 'POST';
 						break;
@@ -820,7 +816,7 @@ export class CrownpeakFS implements INodeType {
 					case 'getBodiesOfPage': {
 						const id = getLocatorValue(this.getNodeParameter('projectId', i));
 						const pageUid = getLocatorValue(this.getNodeParameter('pageUid', i));
-						url = `${baseUrl}/v1/projects/${id}/pages/${pageUid}/bodies`;
+						url = `${baseUrl}/v1/projects/${id}/pages/${pageUid}/bodies/`;
 						method = 'GET';
 						break;
 					}
