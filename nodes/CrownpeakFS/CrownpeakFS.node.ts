@@ -79,6 +79,10 @@ export class CrownpeakFS implements INodeType {
 						name: 'Data Source',
 						value: 'dataSource',
 					},
+					{
+						name: 'Global Content',
+						value: 'globalContent',
+					},
 				],
 				default: 'project',
 			},
@@ -526,6 +530,30 @@ export class CrownpeakFS implements INodeType {
 				noDataExpression: true,
 				displayOptions: {
 					show: {
+						resource: ['globalContent'],
+					},
+				},
+				options: [
+					{
+						name: 'List Global Content Elements',
+						value: 'listGlobalContentElements',
+						action: 'List all global content elements in a project',
+					},
+					{
+						name: 'Get Project Properties',
+						value: 'getProjectProperties',
+						action: 'Get project properties from global content',
+					},
+				],
+				default: 'listGlobalContentElements',
+			},
+			{
+				displayName: 'Operation',
+				name: 'operation',
+				type: 'options',
+				noDataExpression: true,
+				displayOptions: {
+					show: {
 						resource: ['template'],
 					},
 				},
@@ -766,7 +794,7 @@ export class CrownpeakFS implements INodeType {
 				default: '',
 				displayOptions: {
 					show: {
-						resource: ['project', 'search', 'page', 'template', 'script', 'media', 'pageReference', 'dataSource'],
+						resource: ['project', 'search', 'page', 'template', 'script', 'media', 'pageReference', 'dataSource', 'globalContent'],
 					},
 					hide: {
 						operation: ['listProjects', 'listDataSources'],
@@ -2323,6 +2351,19 @@ export class CrownpeakFS implements INodeType {
 					const datasetGid = this.getNodeParameter('datasetGid', i) as string;
 					const datasetRevisionId = this.getNodeParameter('datasetRevisionId', i) as string;
 					url = `${baseUrl}/v1/projects/${id}/data-sources/${encodeURIComponent(datasource)}/datasets/${encodeURIComponent(datasetGid)}/revisions/${encodeURIComponent(datasetRevisionId)}`;
+					method = 'GET';
+					break;
+				}
+
+				case 'listGlobalContentElements': {
+					const id = this.getNodeParameter('projectId', i) as string;
+					url = `${baseUrl}/v1/projects/${id}/global-content/`;
+					method = 'GET';
+					break;
+				}
+				case 'getProjectProperties': {
+					const id = this.getNodeParameter('projectId', i) as string;
+					url = `${baseUrl}/v1/projects/${id}/global-content/project-properties`;
 					method = 'GET';
 					break;
 				}

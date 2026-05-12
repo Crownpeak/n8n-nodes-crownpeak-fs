@@ -558,6 +558,16 @@ export const crownpeakFSOperations: INodeProperties[] = [
 				value: 'getDatasetRevisionById',
 				action: 'Get a single revision of a dataset by ID',
 			},
+			{
+				name: 'List Global Content Elements',
+				value: 'listGlobalContentElements',
+				action: 'List all global content elements in a FirstSpirit project',
+			},
+			{
+				name: 'Get Project Properties',
+				value: 'getProjectProperties',
+				action: 'Get project properties from global content',
+			},
 		],
 		default: 'listProjects',
 	},
