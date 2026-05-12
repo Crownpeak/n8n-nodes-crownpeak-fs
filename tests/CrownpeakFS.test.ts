@@ -1,4 +1,5 @@
 import { CrownpeakFS } from '../nodes/CrownpeakFS/CrownpeakFS.node';
+import { CrownpeakFSApi } from '../nodes/CrownpeakFS/credentials/CrownpeakFSApi.credentials';
 import { INodePropertyOptions } from 'n8n-workflow';
 
 describe('CrownpeakFS Node', () => {
@@ -13,6 +14,14 @@ describe('CrownpeakFS Node', () => {
 		expect(node.description.displayName).toBe('FirstSpirit REST API');
 		expect(Array.isArray(node.description.properties)).toBe(true);
 		expect(node.description.credentials?.[0].name).toBe('crownpeakFSApi');
+	});
+
+	it('should define credential documentation URL', () => {
+		const credentials = new CrownpeakFSApi();
+
+		expect(credentials.documentationUrl).toBe(
+			'https://github.com/Crownpeak/n8n-nodes-crownpeak-fs#credentials',
+		);
 	});
 
 	it('should define all expected operations for each resource', () => {
