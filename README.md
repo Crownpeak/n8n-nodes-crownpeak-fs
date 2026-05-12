@@ -48,6 +48,14 @@ Create FirstSpirit REST API credentials in n8n with:
 
 The FirstSpirit server must be reachable from the n8n process. For local testing, this can require VPN access, network routing, or a tunnel depending on your environment.
 
+## Resource Selection
+
+Where the FirstSpirit REST API exposes list or search endpoints, the node lets you select resources from n8n resource locators. Each locator keeps a manual ID or name mode for expressions and advanced workflows.
+
+## Media Uploads
+
+Media uploads use n8n binary input data. Provide an incoming binary property, then set `Binary Property` to that property name. Local file path uploads are not supported because verified community nodes must not read files from the n8n host filesystem.
+
 ## Prerequisites
 
 - FirstSpirit 2025.7 or higher

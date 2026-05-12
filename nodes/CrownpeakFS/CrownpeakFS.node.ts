@@ -8,11 +8,24 @@ import {
 	IHttpRequestMethods,
 	NodeOperationError,
 } from 'n8n-workflow';
-import FormData from 'form-data';
-import fs from 'node:fs';
-import path from 'node:path';
+import { getBinaryUpload } from './helpers/binary';
+import {
+	bodyLocator,
+	mediumLocator,
+	pageLocator,
+	pageReferenceLocator,
+	projectLocator,
+	scriptLocator,
+	sectionLocator,
+} from './descriptions/locators';
+import { getLocatorValue } from './helpers/resourceLocator';
+import { loadOptions } from './methods/loadOptions';
 
 export class CrownpeakFS implements INodeType {
+	methods = {
+		listSearch: loadOptions,
+	};
+
 	description: INodeTypeDescription = {
 		displayName: 'FirstSpirit REST API',
 		name: 'crownpeakFs',
@@ -319,55 +332,9 @@ export class CrownpeakFS implements INodeType {
 				],
 				default: 'listSectionTemplates',
 			},
-			{
-				displayName: 'Project ID',
-				name: 'projectId',
-				type: 'string',
-				required: true,
-				default: '',
-				displayOptions: {
-					show: {
-						resource: ['project', 'search', 'page', 'template', 'script', 'media', 'pageReference'],
-					},
-					hide: {
-						operation: ['listProjects'],
-					},
-				},
-				placeholder: 'Enter the project ID',
-				description: 'The ID of the project to retrieve',
-			},
-			{
-				displayName: 'Page Reference UID',
-				name: 'pageReferenceUid',
-				type: 'string',
-				required: true,
-				default: '',
-				displayOptions: {
-					show: {
-						resource: ['pageReference'],
-						operation: ['getPageReferenceByUid'],
-					},
-				},
-				placeholder: 'Enter the page reference UID',
-				description: 'The UID of the page reference to retrieve',
-			},
-			{
-				displayName: 'Medium UID',
-				name: 'mediumUid',
-				type: 'string',
-				required: true,
-				default: '',
-				displayOptions: {
-					show: {
-						resource: ['media'],
-					},
-					hide: {
-						operation: ['createMedium'],
-					},
-				},
-				placeholder: 'Enter the medium UID',
-				description: 'The UID of the medium to retrieve',
-			},
+			projectLocator,
+			pageReferenceLocator,
+			mediumLocator,
 			{
 				displayName: 'Search Query',
 				name: 'searchQuery',
@@ -431,86 +398,15 @@ export class CrownpeakFS implements INodeType {
 				placeholder: 'Enter the editor name',
 				description: 'The technical identifier of an input component',
 			},
+			pageLocator,
+			bodyLocator,
+			sectionLocator,
+			scriptLocator,
 			{
-				displayName: 'Page UID',
-				name: 'pageUid',
+				displayName: 'Binary Property',
+				name: 'binaryPropertyName',
 				type: 'string',
-				required: true,
-				default: '',
-				displayOptions: {
-					show: {
-						resource: ['page'],
-					},
-					hide: {
-						operation: ['listPages', 'createPage'],
-					},
-				},
-				placeholder: 'Enter the page UID',
-				description: 'The UID of the page to retrieve',
-			},
-			{
-				displayName: 'Body Name',
-				name: 'bodyName',
-				type: 'string',
-				required: true,
-				default: '',
-				displayOptions: {
-					show: {
-						resource: ['page'],
-						operation: [
-							'addSectionToBody',
-							'updateInputElementOfSectionForm',
-							'getInputElementOfSectionForm',
-							'updateInputElementOfSectionForm',
-							'getBodyOfPageByName',
-							'getInputElementsOfSectionFormFromPage',
-						],
-					},
-				},
-				placeholder: 'Enter the body name',
-				description: 'The name of the body to retrieve from a page',
-			},
-			{
-				displayName: 'Section Name',
-				name: 'sectionName',
-				type: 'string',
-				required: true,
-				default: '',
-				displayOptions: {
-					show: {
-						resource: ['page'],
-						operation: [
-							'addSectionToBody',
-							'updateInputElementOfSectionForm',
-							'getInputElementOfSectionForm',
-							'updateInputElementOfSectionForm',
-							'getInputElementsOfSectionFormFromPage',
-						],
-					},
-				},
-				placeholder: 'Enter the section name',
-				description: 'The name of the section to retrieve from a page',
-			},
-			{
-				displayName: 'Script Name',
-				name: 'scriptName',
-				type: 'string',
-				required: true,
-				default: '',
-				displayOptions: {
-					show: {
-						resource: ['script'],
-						operation: ['executeScript'],
-					},
-				},
-				placeholder: 'Enter the script name',
-				description: 'The name of the script to execute',
-			},
-			{
-				displayName: 'File Path',
-				name: 'filePath',
-				type: 'string',
-				default: '',
+				default: 'data',
 				required: true,
 				displayOptions: {
 					show: {
@@ -518,8 +414,7 @@ export class CrownpeakFS implements INodeType {
 						operation: ['uploadBinaryDataToMedium'],
 					},
 				},
-				placeholder: 'Enter the file path',
-				description: 'The file path to the file to upload',
+				description: 'Name of the input binary property that contains the file to upload',
 			},
 			{
 				displayName: 'Content',
@@ -566,40 +461,33 @@ export class CrownpeakFS implements INodeType {
 			let method: IHttpRequestMethods;
 			let url = '';
 			let headers: IDataObject = {};
-			let body: FormData | string | undefined;
+			let body: Buffer | IDataObject | string | undefined;
 
 			let isBinaryEndpoint = operation === 'getBinaryDataOfMedium';
 
 			switch (operation) {
 				case 'getBinaryDataOfMedium': {
-					const id = this.getNodeParameter('projectId', i) as string;
-					const mediumUid = this.getNodeParameter('mediumUid', i) as string;
+					const id = getLocatorValue(this.getNodeParameter('projectId', i));
+					const mediumUid = getLocatorValue(this.getNodeParameter('mediumUid', i));
 					url = `${baseUrl}/v1/projects/${id}/media/${mediumUid}/data`;
 					method = 'GET';
 					headers.Accept = '*/*';
 					break;
 				}
 				case 'uploadBinaryDataToMedium': {
-					const id = this.getNodeParameter('projectId', i) as string;
-					const mediumUid = this.getNodeParameter('mediumUid', i) as string;
-					const filePath = this.getNodeParameter('filePath', i) as string;
-
-					if (!fs.existsSync(filePath)) {
-						throw new NodeOperationError(this.getNode(), `File not found at path: ${filePath}`);
-					}
-
-					const formData = new FormData();
-					const fileName = path.basename(filePath);
-					const fileBuffer = fs.readFileSync(filePath);
-					formData.append('file', fileBuffer, fileName);
+					const id = getLocatorValue(this.getNodeParameter('projectId', i));
+					const mediumUid = getLocatorValue(this.getNodeParameter('mediumUid', i));
+					const binaryPropertyName = this.getNodeParameter('binaryPropertyName', i) as string;
+					const upload = await getBinaryUpload(this, items[i], i, binaryPropertyName);
 
 					url = `${baseUrl}/v1/projects/${id}/media/${mediumUid}/data`;
-					body = formData;
+					body = upload.buffer;
 					method = 'PUT';
+					headers['Content-Type'] = upload.mimeType;
 					break;
 				}
 				case 'createMedium': {
-					const id = this.getNodeParameter('projectId', i) as string;
+					const id = getLocatorValue(this.getNodeParameter('projectId', i));
 					const content = this.getNodeParameter('content', i) as string;
 					url = `${baseUrl}/v1/projects/${id}/media`;
 					body = JSON.parse(content);
@@ -607,14 +495,14 @@ export class CrownpeakFS implements INodeType {
 					break;
 				}
 				case 'getMedium': {
-					const id = this.getNodeParameter('projectId', i) as string;
-					const mediumUid = this.getNodeParameter('mediumUid', i) as string;
+					const id = getLocatorValue(this.getNodeParameter('projectId', i));
+					const mediumUid = getLocatorValue(this.getNodeParameter('mediumUid', i));
 					url = `${baseUrl}/v1/projects/${id}/media/${mediumUid}`;
 					method = 'GET';
 					break;
 				}
 				case 'searchProject': {
-					const id = this.getNodeParameter('projectId', i) as string;
+					const id = getLocatorValue(this.getNodeParameter('projectId', i));
 					const q = this.getNodeParameter('searchQuery', i) as string;
 					const page = this.getNodeParameter('pageNumber', i) as string;
 					const size = this.getNodeParameter('pageSize', i) as string;
@@ -624,13 +512,13 @@ export class CrownpeakFS implements INodeType {
 					break;
 				}
 				case 'listPageReferences': {
-					const id = this.getNodeParameter('projectId', i) as string;
+					const id = getLocatorValue(this.getNodeParameter('projectId', i));
 					url = `${baseUrl}/v1/projects/${id}/page-references/`;
 					method = 'GET';
 					break;
 				}
 				case 'createPageReference': {
-					const id = this.getNodeParameter('projectId', i) as string;
+					const id = getLocatorValue(this.getNodeParameter('projectId', i));
 					const content = this.getNodeParameter('content', i) as string;
 					url = `${baseUrl}/v1/projects/${id}/page-references/`;
 					body = JSON.parse(content);
@@ -638,20 +526,20 @@ export class CrownpeakFS implements INodeType {
 					break;
 				}
 				case 'getPageReferenceByUid': {
-					const id = this.getNodeParameter('projectId', i) as string;
-					const pageReferenceUid = this.getNodeParameter('pageReferenceUid', i) as string;
+					const id = getLocatorValue(this.getNodeParameter('projectId', i));
+					const pageReferenceUid = getLocatorValue(this.getNodeParameter('pageReferenceUid', i));
 					url = `${baseUrl}/v1/projects/${id}/page-references/${pageReferenceUid}`;
 					method = 'GET';
 					break;
 				}
 				case 'listSectionTemplates': {
-					const id = this.getNodeParameter('projectId', i) as string;
+					const id = getLocatorValue(this.getNodeParameter('projectId', i));
 					url = `${baseUrl}/v1/projects/${id}/templates/section-templates`;
 					method = 'GET';
 					break;
 				}
 				case 'createSectionTemplate': {
-					const id = this.getNodeParameter('projectId', i) as string;
+					const id = getLocatorValue(this.getNodeParameter('projectId', i));
 					const content = this.getNodeParameter('content', i) as string;
 					url = `${baseUrl}/v1/projects/${id}/templates/section-templates`;
 					body = JSON.parse(content);
@@ -659,13 +547,13 @@ export class CrownpeakFS implements INodeType {
 					break;
 				}
 				case 'listPageTemplates': {
-					const id = this.getNodeParameter('projectId', i) as string;
+					const id = getLocatorValue(this.getNodeParameter('projectId', i));
 					url = `${baseUrl}/v1/projects/${id}/templates/page-templates`;
 					method = 'GET';
 					break;
 				}
 				case 'createPageTemplate': {
-					const id = this.getNodeParameter('projectId', i) as string;
+					const id = getLocatorValue(this.getNodeParameter('projectId', i));
 					const content = this.getNodeParameter('content', i) as string;
 					url = `${baseUrl}/v1/projects/${id}/templates/page-templates`;
 					body = JSON.parse(content);
@@ -673,10 +561,10 @@ export class CrownpeakFS implements INodeType {
 					break;
 				}
 				case 'addSectionToBody': {
-					const id = this.getNodeParameter('projectId', i) as string;
-					const pageUid = this.getNodeParameter('pageUid', i) as string;
-					const bodyName = this.getNodeParameter('bodyName', i) as string;
-					const sectionName = this.getNodeParameter('sectionName', i) as string;
+					const id = getLocatorValue(this.getNodeParameter('projectId', i));
+					const pageUid = getLocatorValue(this.getNodeParameter('pageUid', i));
+					const bodyName = getLocatorValue(this.getNodeParameter('bodyName', i));
+					const sectionName = getLocatorValue(this.getNodeParameter('sectionName', i));
 					const content = this.getNodeParameter('content', i) as string;
 					url = `${baseUrl}/v1/projects/${id}/pages/${pageUid}/bodies/${bodyName}/sections/${sectionName}`;
 					body = JSON.parse(content);
@@ -684,8 +572,8 @@ export class CrownpeakFS implements INodeType {
 					break;
 				}
 				case 'executeActionsOnPage': {
-					const id = this.getNodeParameter('projectId', i) as string;
-					const pageUid = this.getNodeParameter('pageUid', i) as string;
+					const id = getLocatorValue(this.getNodeParameter('projectId', i));
+					const pageUid = getLocatorValue(this.getNodeParameter('pageUid', i));
 					const content = this.getNodeParameter('content', i) as string;
 					url = `${baseUrl}/v1/projects/${id}/pages/${pageUid}/actions`;
 					body = JSON.parse(content);
@@ -693,13 +581,13 @@ export class CrownpeakFS implements INodeType {
 					break;
 				}
 				case 'listPages': {
-					const id = this.getNodeParameter('projectId', i) as string;
+					const id = getLocatorValue(this.getNodeParameter('projectId', i));
 					url = `${baseUrl}/v1/projects/${id}/pages/`;
 					method = 'GET';
 					break;
 				}
 				case 'createPage': {
-					const id = this.getNodeParameter('projectId', i) as string;
+					const id = getLocatorValue(this.getNodeParameter('projectId', i));
 					const content = this.getNodeParameter('content', i) as string;
 					url = `${baseUrl}/v1/projects/${id}/pages/`;
 					body = JSON.parse(content);
@@ -707,16 +595,16 @@ export class CrownpeakFS implements INodeType {
 					break;
 				}
 				case 'getInputElementOfForm': {
-					const id = this.getNodeParameter('projectId', i) as string;
-					const pageUid = this.getNodeParameter('pageUid', i) as string;
+					const id = getLocatorValue(this.getNodeParameter('projectId', i));
+					const pageUid = getLocatorValue(this.getNodeParameter('pageUid', i));
 					const editorName = this.getNodeParameter('editorName', i) as string;
 					url = `${baseUrl}/v1/projects/${id}/pages/${pageUid}/form/${editorName}`;
 					method = 'GET';
 					break;
 				}
 				case 'updateInputElementOfForm': {
-					const id = this.getNodeParameter('projectId', i) as string;
-					const pageUid = this.getNodeParameter('pageUid', i) as string;
+					const id = getLocatorValue(this.getNodeParameter('projectId', i));
+					const pageUid = getLocatorValue(this.getNodeParameter('pageUid', i));
 					const editorName = this.getNodeParameter('editorName', i) as string;
 					const content = this.getNodeParameter('content', i) as string;
 					url = `${baseUrl}/v1/projects/${id}/pages/${pageUid}/form/${editorName}`;
@@ -725,20 +613,20 @@ export class CrownpeakFS implements INodeType {
 					break;
 				}
 				case 'getInputElementOfSectionForm': {
-					const id = this.getNodeParameter('projectId', i) as string;
-					const pageUid = this.getNodeParameter('pageUid', i) as string;
-					const bodyName = this.getNodeParameter('bodyName', i) as string;
-					const sectionName = this.getNodeParameter('sectionName', i) as string;
+					const id = getLocatorValue(this.getNodeParameter('projectId', i));
+					const pageUid = getLocatorValue(this.getNodeParameter('pageUid', i));
+					const bodyName = getLocatorValue(this.getNodeParameter('bodyName', i));
+					const sectionName = getLocatorValue(this.getNodeParameter('sectionName', i));
 					const editorName = this.getNodeParameter('editorName', i) as string;
 					url = `${baseUrl}/v1/projects/${id}/pages/${pageUid}/bodies/${bodyName}/sections/${sectionName}/form/${editorName}`;
 					method = 'GET';
 					break;
 				}
 				case 'updateInputElementOfSectionForm': {
-					const id = this.getNodeParameter('projectId', i) as string;
-					const pageUid = this.getNodeParameter('pageUid', i) as string;
-					const bodyName = this.getNodeParameter('bodyName', i) as string;
-					const sectionName = this.getNodeParameter('sectionName', i) as string;
+					const id = getLocatorValue(this.getNodeParameter('projectId', i));
+					const pageUid = getLocatorValue(this.getNodeParameter('pageUid', i));
+					const bodyName = getLocatorValue(this.getNodeParameter('bodyName', i));
+					const sectionName = getLocatorValue(this.getNodeParameter('sectionName', i));
 					const editorName = this.getNodeParameter('editorName', i) as string;
 					const content = this.getNodeParameter('content', i) as string;
 					url = `${baseUrl}/v1/projects/${id}/pages/${pageUid}/bodies/${bodyName}/sections/${sectionName}/form/${editorName}`;
@@ -747,52 +635,52 @@ export class CrownpeakFS implements INodeType {
 					break;
 				}
 				case 'getPage': {
-					const id = this.getNodeParameter('projectId', i) as string;
-					const pageUid = this.getNodeParameter('pageUid', i) as string;
+					const id = getLocatorValue(this.getNodeParameter('projectId', i));
+					const pageUid = getLocatorValue(this.getNodeParameter('pageUid', i));
 					url = `${baseUrl}/v1/projects/${id}/pages/${pageUid}`;
 					method = 'GET';
 					break;
 				}
 				case 'getInputElementsOfFormFromPage': {
-					const id = this.getNodeParameter('projectId', i) as string;
-					const pageUid = this.getNodeParameter('pageUid', i) as string;
+					const id = getLocatorValue(this.getNodeParameter('projectId', i));
+					const pageUid = getLocatorValue(this.getNodeParameter('pageUid', i));
 					url = `${baseUrl}/v1/projects/${id}/pages/${pageUid}/form`;
 					method = 'GET';
 					break;
 				}
 				case 'getBodiesOfPage': {
-					const id = this.getNodeParameter('projectId', i) as string;
-					const pageUid = this.getNodeParameter('pageUid', i) as string;
+					const id = getLocatorValue(this.getNodeParameter('projectId', i));
+					const pageUid = getLocatorValue(this.getNodeParameter('pageUid', i));
 					url = `${baseUrl}/v1/projects/${id}/pages/${pageUid}/bodies`;
 					method = 'GET';
 					break;
 				}
 				case 'getBodyOfPageByName': {
-					const id = this.getNodeParameter('projectId', i) as string;
-					const pageUid = this.getNodeParameter('pageUid', i) as string;
-					const bodyName = this.getNodeParameter('bodyName', i) as string;
+					const id = getLocatorValue(this.getNodeParameter('projectId', i));
+					const pageUid = getLocatorValue(this.getNodeParameter('pageUid', i));
+					const bodyName = getLocatorValue(this.getNodeParameter('bodyName', i));
 					url = `${baseUrl}/v1/projects/${id}/pages/${pageUid}/bodies/${bodyName}`;
 					method = 'GET';
 					break;
 				}
 				case 'getInputElementsOfSectionFormFromPage': {
-					const id = this.getNodeParameter('projectId', i) as string;
-					const pageUid = this.getNodeParameter('pageUid', i) as string;
-					const bodyName = this.getNodeParameter('bodyName', i) as string;
-					const sectionName = this.getNodeParameter('sectionName', i) as string;
+					const id = getLocatorValue(this.getNodeParameter('projectId', i));
+					const pageUid = getLocatorValue(this.getNodeParameter('pageUid', i));
+					const bodyName = getLocatorValue(this.getNodeParameter('bodyName', i));
+					const sectionName = getLocatorValue(this.getNodeParameter('sectionName', i));
 					url = `${baseUrl}/v1/projects/${id}/pages/${pageUid}/bodies/${bodyName}/sections/${sectionName}/form`;
 					method = 'GET';
 					break;
 				}
 				case 'listScripts': {
-					const id = this.getNodeParameter('projectId', i) as string;
+					const id = getLocatorValue(this.getNodeParameter('projectId', i));
 					url = `${baseUrl}/v1/projects/${id}/scripts/`;
 					method = 'GET';
 					break;
 				}
 				case 'executeScript': {
-					const id = this.getNodeParameter('projectId', i) as string;
-					const scriptName = this.getNodeParameter('scriptName', i) as string;
+					const id = getLocatorValue(this.getNodeParameter('projectId', i));
+					const scriptName = getLocatorValue(this.getNodeParameter('scriptName', i));
 					const content = this.getNodeParameter('content', i) as string;
 					url = `${baseUrl}/v1/projects/${id}/scripts/${scriptName}/execute`;
 					body = JSON.parse(content);
@@ -806,7 +694,7 @@ export class CrownpeakFS implements INodeType {
 					break;
 				}
 				case 'getProject': {
-					const id = this.getNodeParameter('projectId', i) as string;
+					const id = getLocatorValue(this.getNodeParameter('projectId', i));
 					url = `${baseUrl}/v1/projects/${id}`;
 					method = 'GET';
 					break;
@@ -820,15 +708,13 @@ export class CrownpeakFS implements INodeType {
 				url,
 				headers: {
 					Authorization: 'Basic ' + Buffer.from(`${username}:${password}`).toString('base64'),
-					...(body instanceof FormData
-						? body.getHeaders()
-						: { 'Content-Type': 'application/json' }),
+					'Content-Type': headers['Content-Type'] ?? 'application/json',
 					Accept: headers.Accept ?? (isBinaryEndpoint ? '*/*' : 'application/json'),
 				},
 				body,
 				json:
 					!isBinaryEndpoint &&
-					!(body instanceof FormData) &&
+					!Buffer.isBuffer(body) &&
 					String(headers.Accept ?? 'application/json')
 						.toLowerCase()
 						.includes('json'),

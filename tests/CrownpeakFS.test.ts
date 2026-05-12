@@ -24,6 +24,31 @@ describe('CrownpeakFS Node', () => {
 		);
 	});
 
+	it('should expose project as a resource locator', () => {
+		const project = node.description.properties.find((property) => property.name === 'projectId');
+
+		expect(project?.type).toBe('resourceLocator');
+		expect(project?.default).toEqual({ mode: 'list', value: '' });
+		expect(project?.modes?.map((mode) => mode.name)).toEqual(['list', 'id']);
+	});
+
+	it('should register list search methods', () => {
+		expect((node as any).methods?.listSearch?.searchProjects).toBeDefined();
+	});
+
+	it.each([
+		'pageUid',
+		'pageReferenceUid',
+		'mediumUid',
+		'scriptName',
+		'bodyName',
+		'sectionName',
+	])('should expose %s as a resource locator', (parameterName) => {
+		const property = node.description.properties.find((candidate) => candidate.name === parameterName);
+
+		expect(property?.type).toBe('resourceLocator');
+	});
+
 	it('should define all expected operations for each resource', () => {
 		function getOperationValues(resource: string) {
 			const opProp = node.description.properties.find(

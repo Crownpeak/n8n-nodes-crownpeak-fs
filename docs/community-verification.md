@@ -4,7 +4,7 @@ This document tracks readiness for n8n verified community node review.
 
 ## Current Status
 
-The package is a community node candidate. Verification readiness is blocked until runtime filesystem upload behavior is replaced with n8n binary data and the release path uses GitHub Actions with npm provenance.
+The package is a community node candidate. Runtime filesystem upload behavior has been replaced with n8n binary data. Static tests guard against reintroducing `node:fs`, `node:path`, or `form-data` in runtime node code. Verification readiness still depends on validating the release path through GitHub Actions with npm provenance.
 
 ## Checklist
 
@@ -31,5 +31,5 @@ The npm package owner must configure trusted publishing for this repository. A m
 
 ## Known Verification Risks
 
-- The current file-path media upload must be replaced with n8n binary data.
+- npm trusted publishing and n8n Creator Portal submission require maintainer-controlled external setup.
 - The FirstSpirit REST module is evolving, so API response assumptions must stay documented and tested.
