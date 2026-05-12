@@ -159,4 +159,46 @@ export const loadOptions = {
 			results: filterOptions(options, filter),
 		};
 	},
+
+	async searchSectionTemplates(
+		this: ILoadOptionsFunctions,
+		filter?: string,
+	): Promise<INodeListSearchResult> {
+		const projectId = currentLocatorValue(this, 'projectId');
+		const response = await crownpeakApiRequest(
+			this,
+			'GET',
+			`/v1/projects/${projectId}/section-templates/`,
+		);
+		const options = toNameValueOptions(asArray(response), ['name', 'displayName', 'uid', 'id'], [
+			'uid',
+			'id',
+			'name',
+		]);
+
+		return {
+			results: filterOptions(options, filter),
+		};
+	},
+
+	async searchPageTemplates(
+		this: ILoadOptionsFunctions,
+		filter?: string,
+	): Promise<INodeListSearchResult> {
+		const projectId = currentLocatorValue(this, 'projectId');
+		const response = await crownpeakApiRequest(
+			this,
+			'GET',
+			`/v1/projects/${projectId}/page-templates/`,
+		);
+		const options = toNameValueOptions(asArray(response), ['name', 'displayName', 'uid', 'id'], [
+			'uid',
+			'id',
+			'name',
+		]);
+
+		return {
+			results: filterOptions(options, filter),
+		};
+	},
 };

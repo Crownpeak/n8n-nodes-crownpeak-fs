@@ -7,6 +7,7 @@ import {
 	IExecuteFunctions,
 	IHttpRequestMethods,
 	NodeOperationError,
+	INodeProperties,
 } from 'n8n-workflow';
 import { getBinaryUpload } from './helpers/binary';
 import {
@@ -20,6 +21,18 @@ import {
 } from './descriptions/locators';
 import { getLocatorValue } from './helpers/resourceLocator';
 import { loadOptions } from './methods/loadOptions';
+import {
+	createMediumFields,
+	createPageFields,
+	createPageReferenceFields,
+	createPageTemplateFields,
+	createSectionTemplateFields,
+	addSectionToBodyFields,
+	executeActionsOnPageFields,
+	updateInputElementFields,
+	updateInputElementOfSectionFields,
+} from './descriptions/createUpdateFields';
+import { buildRequestBody } from './helpers/options';
 
 function extractItems(response: unknown): IDataObject[] {
 	if (Array.isArray(response)) {
@@ -36,6 +49,24 @@ function extractItems(response: unknown): IDataObject[] {
 	}
 
 	return [];
+}
+
+function withDisplayOptions(
+	properties: INodeProperties[],
+	resource: string,
+	operation: string,
+): INodeProperties[] {
+	return properties.map((property) => ({
+		...property,
+		displayOptions: {
+			...(property.displayOptions ?? {}),
+			show: {
+				...(property.displayOptions?.show ?? {}),
+				resource: [resource],
+				operation: [operation],
+			},
+		},
+	}));
 }
 
 export class CrownpeakFS implements INodeType {
@@ -439,12 +470,8 @@ export class CrownpeakFS implements INodeType {
 					show: {
 						resource: ['page'],
 						operation: [
-							'updateInputElementOfForm',
-							'updateInputElementOfSectionForm',
 							'getInputElementOfForm',
-							'updateInputElementOfForm',
 							'getInputElementOfSectionForm',
-							'updateInputElementOfSectionForm',
 						],
 					},
 				},
@@ -469,33 +496,33 @@ export class CrownpeakFS implements INodeType {
 				},
 				description: 'Name of the input binary property that contains the file to upload',
 			},
+			...withDisplayOptions(createMediumFields, 'media', 'createMedium'),
+			...withDisplayOptions(createPageFields, 'page', 'createPage'),
+			...withDisplayOptions(createPageReferenceFields, 'pageReference', 'createPageReference'),
+			...withDisplayOptions(createPageTemplateFields, 'template', 'createPageTemplate'),
+			...withDisplayOptions(createSectionTemplateFields, 'template', 'createSectionTemplate'),
+			...withDisplayOptions(addSectionToBodyFields, 'page', 'addSectionToBody'),
+			...withDisplayOptions(executeActionsOnPageFields, 'page', 'executeActionsOnPage'),
+			...withDisplayOptions(updateInputElementFields, 'page', 'updateInputElementOfForm'),
+			...withDisplayOptions(
+				updateInputElementOfSectionFields,
+				'page',
+				'updateInputElementOfSectionForm',
+			),
 			{
-				displayName: 'Content',
-				name: 'content',
+				displayName: 'Script Parameters',
+				name: 'scriptParameters',
 				type: 'json',
-				required: true,
-				default: `{}`,
-				typeOptions: {
-					alwaysOpenEditWindow: true,
-				},
+				default: '{}',
+				typeOptions: { alwaysOpenEditWindow: true },
 				displayOptions: {
 					show: {
-						resource: ['page', 'pageReference', 'script', 'template', 'media'],
-						operation: [
-							'createMedium',
-							'addSectionToBody',
-							'executeActionsOnPage',
-							'updateInputElementOfForm',
-							'updateInputElementOfSectionForm',
-							'createPage',
-							'createPageReference',
-							'executeScript',
-							'createSectionTemplate',
-							'createPageTemplate',
-						],
+						resource: ['script'],
+						operation: ['executeScript'],
 					},
 				},
-				description: 'Raw JSON for the request body',
+				description:
+					"Parameters passed to the script as a JSON object. Structure depends on the script's expected inputs.",
 			},
 		],
 	};
@@ -541,9 +568,14 @@ export class CrownpeakFS implements INodeType {
 				}
 				case 'createMedium': {
 					const id = getLocatorValue(this.getNodeParameter('projectId', i));
-					const content = this.getNodeParameter('content', i) as string;
+					const typed = {
+						uid: this.getNodeParameter('uid', i, '') as string,
+						filename: this.getNodeParameter('filename', i, '') as string,
+						type: this.getNodeParameter('type', i, '') as string,
+					};
+					const additional = this.getNodeParameter('additionalProperties', i, '{}') as string;
 					url = `${baseUrl}/v1/projects/${id}/media`;
-					body = JSON.parse(content);
+					body = buildRequestBody(typed, additional);
 					method = 'POST';
 					break;
 				}
@@ -608,9 +640,14 @@ export class CrownpeakFS implements INodeType {
 				}
 				case 'createPageReference': {
 					const id = getLocatorValue(this.getNodeParameter('projectId', i));
-					const content = this.getNodeParameter('content', i) as string;
-					url = `${baseUrl}/v1/projects/${id}/page-references/`;
-					body = JSON.parse(content);
+					const typed = {
+						uid: this.getNodeParameter('uid', i, '') as string,
+						pageId: this.getNodeParameter('pageId', i, 0) as number,
+						location: this.getNodeParameter('location', i, '') as string,
+					};
+					const additional = this.getNodeParameter('additionalProperties', i, '{}') as string;
+					url = `${baseUrl}/v1/projects/${id}/page-references`;
+					body = buildRequestBody(typed, additional);
 					method = 'POST';
 					break;
 				}
@@ -629,9 +666,14 @@ export class CrownpeakFS implements INodeType {
 				}
 				case 'createSectionTemplate': {
 					const id = getLocatorValue(this.getNodeParameter('projectId', i));
-					const content = this.getNodeParameter('content', i) as string;
+					const typed = {
+						uid: this.getNodeParameter('uid', i, '') as string,
+						name: this.getNodeParameter('name', i, '') as string,
+						description: this.getNodeParameter('description', i, '') as string,
+					};
+					const additional = this.getNodeParameter('additionalProperties', i, '{}') as string;
 					url = `${baseUrl}/v1/projects/${id}/templates/section-templates`;
-					body = JSON.parse(content);
+					body = buildRequestBody(typed, additional);
 					method = 'POST';
 					break;
 				}
@@ -643,9 +685,22 @@ export class CrownpeakFS implements INodeType {
 				}
 				case 'createPageTemplate': {
 					const id = getLocatorValue(this.getNodeParameter('projectId', i));
-					const content = this.getNodeParameter('content', i) as string;
+					const bodiesParam = this.getNodeParameter('bodies', i, {}) as {
+						body?: Array<{ name: string; description?: string }>;
+					};
+					const bodies = (bodiesParam.body ?? []).map((b) => ({
+						name: b.name,
+						description: b.description ?? null,
+					}));
+					const typed = {
+						uid: this.getNodeParameter('uid', i, '') as string,
+						name: this.getNodeParameter('name', i, '') as string,
+						description: this.getNodeParameter('description', i, '') as string,
+						bodies: bodies.length > 0 ? bodies : undefined,
+					};
+					const additional = this.getNodeParameter('additionalProperties', i, '{}') as string;
 					url = `${baseUrl}/v1/projects/${id}/templates/page-templates`;
-					body = JSON.parse(content);
+					body = buildRequestBody(typed as IDataObject, additional);
 					method = 'POST';
 					break;
 				}
@@ -654,18 +709,25 @@ export class CrownpeakFS implements INodeType {
 					const pageUid = getLocatorValue(this.getNodeParameter('pageUid', i));
 					const bodyName = getLocatorValue(this.getNodeParameter('bodyName', i));
 					const sectionName = getLocatorValue(this.getNodeParameter('sectionName', i));
-					const content = this.getNodeParameter('content', i) as string;
+					const templateUid = getLocatorValue(this.getNodeParameter('sectionTemplateUid', i));
 					url = `${baseUrl}/v1/projects/${id}/pages/${pageUid}/bodies/${bodyName}/sections/${sectionName}`;
-					body = JSON.parse(content);
+					body = { templateUid };
 					method = 'PUT';
 					break;
 				}
 				case 'executeActionsOnPage': {
 					const id = getLocatorValue(this.getNodeParameter('projectId', i));
 					const pageUid = getLocatorValue(this.getNodeParameter('pageUid', i));
-					const content = this.getNodeParameter('content', i) as string;
+					const action = this.getNodeParameter('action', i, 'copy') as string;
+					const releaseOptions =
+						action === 'release'
+							? (this.getNodeParameter('releaseOptions', i, {}) as IDataObject)
+							: undefined;
 					url = `${baseUrl}/v1/projects/${id}/pages/${pageUid}/actions`;
-					body = JSON.parse(content);
+					body =
+						action === 'release' && releaseOptions && Object.keys(releaseOptions).length > 0
+							? { action, options: releaseOptions }
+							: { action };
 					method = 'POST';
 					break;
 				}
@@ -677,9 +739,13 @@ export class CrownpeakFS implements INodeType {
 				}
 				case 'createPage': {
 					const id = getLocatorValue(this.getNodeParameter('projectId', i));
-					const content = this.getNodeParameter('content', i) as string;
-					url = `${baseUrl}/v1/projects/${id}/pages/`;
-					body = JSON.parse(content);
+					const typed = {
+						uid: this.getNodeParameter('uid', i, '') as string,
+						templateUid: getLocatorValue(this.getNodeParameter('templateUid', i)),
+					};
+					const additional = this.getNodeParameter('additionalProperties', i, '{}') as string;
+					url = `${baseUrl}/v1/projects/${id}/pages`;
+					body = buildRequestBody(typed, additional);
 					method = 'POST';
 					break;
 				}
@@ -694,10 +760,22 @@ export class CrownpeakFS implements INodeType {
 				case 'updateInputElementOfForm': {
 					const id = getLocatorValue(this.getNodeParameter('projectId', i));
 					const pageUid = getLocatorValue(this.getNodeParameter('pageUid', i));
-					const editorName = this.getNodeParameter('editorName', i) as string;
-					const content = this.getNodeParameter('content', i) as string;
-					url = `${baseUrl}/v1/projects/${id}/pages/${pageUid}/form/${editorName}`;
-					body = JSON.parse(content);
+					const editorName = this.getNodeParameter('inputElementName', i, '') as string;
+					const language = this.getNodeParameter('language', i, '') as string;
+					const typed = {
+						name: editorName,
+						type: this.getNodeParameter('inputElementType', i, '') as string,
+						language: language === '' ? null : language,
+						description: this.getNodeParameter('inputElementDescription', i, '') as string,
+						configuration: JSON.parse(
+							this.getNodeParameter('inputElementConfiguration', i, '{}') as string,
+						),
+						content: JSON.parse(this.getNodeParameter('inputElementContent', i, '""') as string),
+					};
+					url = `${baseUrl}/v1/projects/${id}/pages/${pageUid}/form/${editorName}${
+						language ? `/${language}` : ''
+					}`;
+					body = typed as IDataObject;
 					method = 'PATCH';
 					break;
 				}
@@ -716,10 +794,22 @@ export class CrownpeakFS implements INodeType {
 					const pageUid = getLocatorValue(this.getNodeParameter('pageUid', i));
 					const bodyName = getLocatorValue(this.getNodeParameter('bodyName', i));
 					const sectionName = getLocatorValue(this.getNodeParameter('sectionName', i));
-					const editorName = this.getNodeParameter('editorName', i) as string;
-					const content = this.getNodeParameter('content', i) as string;
-					url = `${baseUrl}/v1/projects/${id}/pages/${pageUid}/bodies/${bodyName}/sections/${sectionName}/form/${editorName}`;
-					body = JSON.parse(content);
+					const editorName = this.getNodeParameter('inputElementName', i, '') as string;
+					const language = this.getNodeParameter('language', i, '') as string;
+					const typed = {
+						name: editorName,
+						type: this.getNodeParameter('inputElementType', i, '') as string,
+						language: language === '' ? null : language,
+						description: this.getNodeParameter('inputElementDescription', i, '') as string,
+						configuration: JSON.parse(
+							this.getNodeParameter('inputElementConfiguration', i, '{}') as string,
+						),
+						content: JSON.parse(this.getNodeParameter('inputElementContent', i, '""') as string),
+					};
+					url = `${baseUrl}/v1/projects/${id}/pages/${pageUid}/bodies/${bodyName}/sections/${sectionName}/form/${editorName}${
+						language ? `/${language}` : ''
+					}`;
+					body = typed as IDataObject;
 					method = 'PATCH';
 					break;
 				}
@@ -770,9 +860,9 @@ export class CrownpeakFS implements INodeType {
 				case 'executeScript': {
 					const id = getLocatorValue(this.getNodeParameter('projectId', i));
 					const scriptName = getLocatorValue(this.getNodeParameter('scriptName', i));
-					const content = this.getNodeParameter('content', i) as string;
+					const params = this.getNodeParameter('scriptParameters', i, '{}') as string;
 					url = `${baseUrl}/v1/projects/${id}/scripts/${scriptName}/execute`;
-					body = JSON.parse(content);
+					body = buildRequestBody({}, params);
 					method = 'POST';
 					headers.Accept = 'text/plain';
 					break;
