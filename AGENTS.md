@@ -14,6 +14,7 @@ This repository contains the `n8n-nodes-crownpeak-fs` community node package for
 - Run the relevant verification commands before claiming work is complete.
 - Keep user-facing text, docs, PRs, commit messages, and examples in English.
 - Update tests and docs when behavior changes.
+- Commit feature-complete units only. Do not produce per-task or per-file commits during multi-step implementations; stage changes and commit at logical milestone groupings (feat, docs, test). This overrides any plan step that says "commit after each step".
 
 ## n8n Community Node Constraints
 
