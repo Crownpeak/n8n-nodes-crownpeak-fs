@@ -158,6 +158,56 @@ export const crownpeakFSOperations: INodeProperties[] = [
 				action: 'Create FirstSpirit section template',
 			},
 			{
+				name: 'Get FirstSpirit Section Template',
+				value: 'getSectionTemplate',
+				action: 'Get a specific FirstSpirit section template',
+			},
+			{
+				name: 'Delete FirstSpirit Section Template',
+				value: 'deleteSectionTemplate',
+				action: 'Delete FirstSpirit section template',
+			},
+			{
+				name: 'Get Section Template Form',
+				value: 'getSectionTemplateForm',
+				action: 'Get the form of a FirstSpirit section template',
+			},
+			{
+				name: 'Get Section Template GOM',
+				value: 'getSectionTemplateGom',
+				action: 'Get the GOM definition of a FirstSpirit section template',
+			},
+			{
+				name: 'Set Section Template GOM',
+				value: 'setSectionTemplateGom',
+				action: 'Set the GOM definition of a FirstSpirit section template',
+			},
+			{
+				name: 'Get Section Template Rules',
+				value: 'getSectionTemplateRules',
+				action: 'Get the ruleset definition of a FirstSpirit section template',
+			},
+			{
+				name: 'Set Section Template Rules',
+				value: 'setSectionTemplateRules',
+				action: 'Set the ruleset definition of a FirstSpirit section template',
+			},
+			{
+				name: 'List Section Template Channel Sources',
+				value: 'listSectionTemplateChannelSources',
+				action: 'List all channel sources of a FirstSpirit section template',
+			},
+			{
+				name: 'Get Section Template Channel Source',
+				value: 'getSectionTemplateChannelSource',
+				action: 'Get a specific channel source of a FirstSpirit section template',
+			},
+			{
+				name: 'Set Section Template Channel Source',
+				value: 'setSectionTemplateChannelSource',
+				action: 'Set a specific channel source of a FirstSpirit section template',
+			},
+			{
 				name: 'List FirstSpirit Page Templates',
 				value: 'listPageTemplates',
 				action: 'List FirstSpirit page templates',
@@ -166,6 +216,156 @@ export const crownpeakFSOperations: INodeProperties[] = [
 				name: 'Create FirstSpirit Page Template',
 				value: 'createPageTemplate',
 				action: 'Create FirstSpirit page template',
+			},
+			{
+				name: 'Get FirstSpirit Page Template',
+				value: 'getPageTemplate',
+				action: 'Get a specific FirstSpirit page template',
+			},
+			{
+				name: 'Delete FirstSpirit Page Template',
+				value: 'deletePageTemplate',
+				action: 'Delete FirstSpirit page template',
+			},
+			{
+				name: 'Get Page Template Form',
+				value: 'getPageTemplateForm',
+				action: 'Get the form of a FirstSpirit page template',
+			},
+			{
+				name: 'Get Page Template GOM',
+				value: 'getPageTemplateGom',
+				action: 'Get the GOM definition of a FirstSpirit page template',
+			},
+			{
+				name: 'Set Page Template GOM',
+				value: 'setPageTemplateGom',
+				action: 'Set the GOM definition of a FirstSpirit page template',
+			},
+			{
+				name: 'Get Page Template Rules',
+				value: 'getPageTemplateRules',
+				action: 'Get the ruleset definition of a FirstSpirit page template',
+			},
+			{
+				name: 'Set Page Template Rules',
+				value: 'setPageTemplateRules',
+				action: 'Set the ruleset definition of a FirstSpirit page template',
+			},
+			{
+				name: 'List Page Template Channel Sources',
+				value: 'listPageTemplateChannelSources',
+				action: 'List all channel sources of a FirstSpirit page template',
+			},
+			{
+				name: 'Get Page Template Channel Source',
+				value: 'getPageTemplateChannelSource',
+				action: 'Get a specific channel source of a FirstSpirit page template',
+			},
+			{
+				name: 'Set Page Template Channel Source',
+				value: 'setPageTemplateChannelSource',
+				action: 'Set a specific channel source of a FirstSpirit page template',
+			},
+			{
+				name: 'List FirstSpirit Link Templates',
+				value: 'listLinkTemplates',
+				action: 'List FirstSpirit link templates',
+			},
+			{
+				name: 'Create FirstSpirit Link Template',
+				value: 'createLinkTemplate',
+				action: 'Create FirstSpirit link template',
+			},
+			{
+				name: 'Get FirstSpirit Link Template',
+				value: 'getLinkTemplate',
+				action: 'Get a specific FirstSpirit link template',
+			},
+			{
+				name: 'Delete FirstSpirit Link Template',
+				value: 'deleteLinkTemplate',
+				action: 'Delete FirstSpirit link template',
+			},
+			{
+				name: 'Get Link Template GOM',
+				value: 'getLinkTemplateGom',
+				action: 'Get the GOM definition of a FirstSpirit link template',
+			},
+			{
+				name: 'Set Link Template GOM',
+				value: 'setLinkTemplateGom',
+				action: 'Set the GOM definition of a FirstSpirit link template',
+			},
+			{
+				name: 'Get Link Template Rules',
+				value: 'getLinkTemplateRules',
+				action: 'Get the ruleset definition of a FirstSpirit link template',
+			},
+			{
+				name: 'Set Link Template Rules',
+				value: 'setLinkTemplateRules',
+				action: 'Set the ruleset definition of a FirstSpirit link template',
+			},
+			{
+				name: 'List Link Template Channel Sources',
+				value: 'listLinkTemplateChannelSources',
+				action: 'List all channel sources of a FirstSpirit link template',
+			},
+			{
+				name: 'Get Link Template Channel Source',
+				value: 'getLinkTemplateChannelSource',
+				action: 'Get a specific channel source of a FirstSpirit link template',
+			},
+			{
+				name: 'Set Link Template Channel Source',
+				value: 'setLinkTemplateChannelSource',
+				action: 'Set a specific channel source of a FirstSpirit link template',
+			},
+			{
+				name: 'List FirstSpirit Format Templates',
+				value: 'listFormatTemplates',
+				action: 'List FirstSpirit format templates',
+			},
+			{
+				name: 'Create FirstSpirit Format Template',
+				value: 'createFormatTemplate',
+				action: 'Create FirstSpirit format template',
+			},
+			{
+				name: 'Get FirstSpirit Format Template',
+				value: 'getFormatTemplate',
+				action: 'Get a specific FirstSpirit format template',
+			},
+			{
+				name: 'Delete FirstSpirit Format Template',
+				value: 'deleteFormatTemplate',
+				action: 'Delete FirstSpirit format template',
+			},
+			{
+				name: 'List Format Template Channel Sources',
+				value: 'listFormatTemplateChannelSources',
+				action: 'List all channel sources of a FirstSpirit format template',
+			},
+			{
+				name: 'Get Format Template Channel Source',
+				value: 'getFormatTemplateChannelSource',
+				action: 'Get a specific channel source of a FirstSpirit format template',
+			},
+			{
+				name: 'Set Format Template Channel Source',
+				value: 'setFormatTemplateChannelSource',
+				action: 'Set a specific channel source of a FirstSpirit format template',
+			},
+			{
+				name: 'List FirstSpirit Database Schemas',
+				value: 'listSchemas',
+				action: 'List FirstSpirit database schemas',
+			},
+			{
+				name: 'Get FirstSpirit Database Schema',
+				value: 'getSchema',
+				action: 'Get a specific FirstSpirit database schema',
 			},
 			{
 				name: 'Add Section To Body',

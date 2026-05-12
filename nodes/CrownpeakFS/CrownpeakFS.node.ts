@@ -410,6 +410,56 @@ export class CrownpeakFS implements INodeType {
 						action: 'Create section template',
 					},
 					{
+						name: 'Get Section Template',
+						value: 'getSectionTemplate',
+						action: 'Get a specific section template',
+					},
+					{
+						name: 'Delete Section Template',
+						value: 'deleteSectionTemplate',
+						action: 'Delete section template',
+					},
+					{
+						name: 'Get Section Template Form',
+						value: 'getSectionTemplateForm',
+						action: 'Get the form of a section template',
+					},
+					{
+						name: 'Get Section Template GOM',
+						value: 'getSectionTemplateGom',
+						action: 'Get the GOM definition of a section template',
+					},
+					{
+						name: 'Set Section Template GOM',
+						value: 'setSectionTemplateGom',
+						action: 'Set the GOM definition of a section template',
+					},
+					{
+						name: 'Get Section Template Rules',
+						value: 'getSectionTemplateRules',
+						action: 'Get the ruleset definition of a section template',
+					},
+					{
+						name: 'Set Section Template Rules',
+						value: 'setSectionTemplateRules',
+						action: 'Set the ruleset definition of a section template',
+					},
+					{
+						name: 'List Section Template Channel Sources',
+						value: 'listSectionTemplateChannelSources',
+						action: 'List all channel sources of a section template',
+					},
+					{
+						name: 'Get Section Template Channel Source',
+						value: 'getSectionTemplateChannelSource',
+						action: 'Get a specific channel source of a section template',
+					},
+					{
+						name: 'Set Section Template Channel Source',
+						value: 'setSectionTemplateChannelSource',
+						action: 'Set a specific channel source of a section template',
+					},
+					{
 						name: 'List Page Templates',
 						value: 'listPageTemplates',
 						action: 'List page templates',
@@ -418,6 +468,156 @@ export class CrownpeakFS implements INodeType {
 						name: 'Create Page Template',
 						value: 'createPageTemplate',
 						action: 'Create page template',
+					},
+					{
+						name: 'Get Page Template',
+						value: 'getPageTemplate',
+						action: 'Get a specific page template',
+					},
+					{
+						name: 'Delete Page Template',
+						value: 'deletePageTemplate',
+						action: 'Delete page template',
+					},
+					{
+						name: 'Get Page Template Form',
+						value: 'getPageTemplateForm',
+						action: 'Get the form of a page template',
+					},
+					{
+						name: 'Get Page Template GOM',
+						value: 'getPageTemplateGom',
+						action: 'Get the GOM definition of a page template',
+					},
+					{
+						name: 'Set Page Template GOM',
+						value: 'setPageTemplateGom',
+						action: 'Set the GOM definition of a page template',
+					},
+					{
+						name: 'Get Page Template Rules',
+						value: 'getPageTemplateRules',
+						action: 'Get the ruleset definition of a page template',
+					},
+					{
+						name: 'Set Page Template Rules',
+						value: 'setPageTemplateRules',
+						action: 'Set the ruleset definition of a page template',
+					},
+					{
+						name: 'List Page Template Channel Sources',
+						value: 'listPageTemplateChannelSources',
+						action: 'List all channel sources of a page template',
+					},
+					{
+						name: 'Get Page Template Channel Source',
+						value: 'getPageTemplateChannelSource',
+						action: 'Get a specific channel source of a page template',
+					},
+					{
+						name: 'Set Page Template Channel Source',
+						value: 'setPageTemplateChannelSource',
+						action: 'Set a specific channel source of a page template',
+					},
+					{
+						name: 'List Link Templates',
+						value: 'listLinkTemplates',
+						action: 'List link templates',
+					},
+					{
+						name: 'Create Link Template',
+						value: 'createLinkTemplate',
+						action: 'Create link template',
+					},
+					{
+						name: 'Get Link Template',
+						value: 'getLinkTemplate',
+						action: 'Get a specific link template',
+					},
+					{
+						name: 'Delete Link Template',
+						value: 'deleteLinkTemplate',
+						action: 'Delete link template',
+					},
+					{
+						name: 'Get Link Template GOM',
+						value: 'getLinkTemplateGom',
+						action: 'Get the GOM definition of a link template',
+					},
+					{
+						name: 'Set Link Template GOM',
+						value: 'setLinkTemplateGom',
+						action: 'Set the GOM definition of a link template',
+					},
+					{
+						name: 'Get Link Template Rules',
+						value: 'getLinkTemplateRules',
+						action: 'Get the ruleset definition of a link template',
+					},
+					{
+						name: 'Set Link Template Rules',
+						value: 'setLinkTemplateRules',
+						action: 'Set the ruleset definition of a link template',
+					},
+					{
+						name: 'List Link Template Channel Sources',
+						value: 'listLinkTemplateChannelSources',
+						action: 'List all channel sources of a link template',
+					},
+					{
+						name: 'Get Link Template Channel Source',
+						value: 'getLinkTemplateChannelSource',
+						action: 'Get a specific channel source of a link template',
+					},
+					{
+						name: 'Set Link Template Channel Source',
+						value: 'setLinkTemplateChannelSource',
+						action: 'Set a specific channel source of a link template',
+					},
+					{
+						name: 'List Format Templates',
+						value: 'listFormatTemplates',
+						action: 'List format templates',
+					},
+					{
+						name: 'Create Format Template',
+						value: 'createFormatTemplate',
+						action: 'Create format template',
+					},
+					{
+						name: 'Get Format Template',
+						value: 'getFormatTemplate',
+						action: 'Get a specific format template',
+					},
+					{
+						name: 'Delete Format Template',
+						value: 'deleteFormatTemplate',
+						action: 'Delete format template',
+					},
+					{
+						name: 'List Format Template Channel Sources',
+						value: 'listFormatTemplateChannelSources',
+						action: 'List all channel sources of a format template',
+					},
+					{
+						name: 'Get Format Template Channel Source',
+						value: 'getFormatTemplateChannelSource',
+						action: 'Get a specific channel source of a format template',
+					},
+					{
+						name: 'Set Format Template Channel Source',
+						value: 'setFormatTemplateChannelSource',
+						action: 'Set a specific channel source of a format template',
+					},
+					{
+						name: 'List Database Schemas',
+						value: 'listSchemas',
+						action: 'List database schemas',
+					},
+					{
+						name: 'Get Database Schema',
+						value: 'getSchema',
+						action: 'Get a specific database schema',
 					},
 				],
 				default: 'listSectionTemplates',
@@ -437,7 +637,7 @@ export class CrownpeakFS implements INodeType {
 					},
 				},
 				placeholder: 'Enter the project ID',
-				description: 'The ID of the project to retrieve',
+				description: 'The ID of the project',
 			},
 			{
 				displayName: 'Page Reference UID',
@@ -461,7 +661,7 @@ export class CrownpeakFS implements INodeType {
 					},
 				},
 				placeholder: 'Enter the page reference UID',
-				description: 'The UID of the page reference to retrieve',
+				description: 'The UID of the page reference',
 			},
 			{
 				displayName: 'Page Reference Revision ID',
@@ -508,7 +708,7 @@ export class CrownpeakFS implements INodeType {
 					},
 				},
 				placeholder: 'Enter the medium UID',
-				description: 'The UID of the medium to retrieve',
+				description: 'The UID of the medium',
 			},
 			{
 				displayName: 'Search Query',
@@ -564,9 +764,7 @@ export class CrownpeakFS implements INodeType {
 							'updateInputElementOfForm',
 							'updateInputElementOfSectionForm',
 							'getInputElementOfForm',
-							'updateInputElementOfForm',
 							'getInputElementOfSectionForm',
-							'updateInputElementOfSectionForm',
 						],
 					},
 				},
@@ -588,7 +786,7 @@ export class CrownpeakFS implements INodeType {
 					},
 				},
 				placeholder: 'Enter the page UID',
-				description: 'The UID of the page to retrieve',
+				description: 'The UID of the page',
 			},
 			{
 				displayName: 'Body Name',
@@ -603,14 +801,13 @@ export class CrownpeakFS implements INodeType {
 							'addSectionToBody',
 							'updateInputElementOfSectionForm',
 							'getInputElementOfSectionForm',
-							'updateInputElementOfSectionForm',
 							'getBodyOfPageByName',
 							'getInputElementsOfSectionFormFromPage',
 						],
 					},
 				},
 				placeholder: 'Enter the body name',
-				description: 'The name of the body to retrieve from a page',
+				description: 'The name of the body on a page',
 			},
 			{
 				displayName: 'Section Name',
@@ -625,13 +822,12 @@ export class CrownpeakFS implements INodeType {
 							'addSectionToBody',
 							'updateInputElementOfSectionForm',
 							'getInputElementOfSectionForm',
-							'updateInputElementOfSectionForm',
 							'getInputElementsOfSectionFormFromPage',
 						],
 					},
 				},
 				placeholder: 'Enter the section name',
-				description: 'The name of the section to retrieve from a page',
+				description: 'The name of the section on a page',
 			},
 			{
 				displayName: 'Script Name',
@@ -648,6 +844,150 @@ export class CrownpeakFS implements INodeType {
 				placeholder: 'Enter the script name',
 				description: 'The name of the script to execute',
 			},
+
+			{
+				displayName: 'Section Template UID',
+				name: 'sectionTemplateUid',
+				type: 'string',
+				required: true,
+				default: '',
+				displayOptions: {
+					show: {
+						resource: ['template'],
+						operation: [
+							'getSectionTemplate',
+							'deleteSectionTemplate',
+							'getSectionTemplateForm',
+							'getSectionTemplateGom',
+							'setSectionTemplateGom',
+							'getSectionTemplateRules',
+							'setSectionTemplateRules',
+							'listSectionTemplateChannelSources',
+							'getSectionTemplateChannelSource',
+							'setSectionTemplateChannelSource',
+						],
+					},
+				},
+				placeholder: 'Enter the section template UID',
+				description: 'The UID of the section template',
+			},
+
+			{
+				displayName: 'Page Template UID',
+				name: 'pageTemplateUid',
+				type: 'string',
+				required: true,
+				default: '',
+				displayOptions: {
+					show: {
+						resource: ['template'],
+						operation: [
+							'getPageTemplate',
+							'deletePageTemplate',
+							'getPageTemplateForm',
+							'getPageTemplateGom',
+							'setPageTemplateGom',
+							'getPageTemplateRules',
+							'setPageTemplateRules',
+							'listPageTemplateChannelSources',
+							'getPageTemplateChannelSource',
+							'setPageTemplateChannelSource',
+						],
+					},
+				},
+				placeholder: 'Enter the page template UID',
+				description: 'The UID of the page template',
+			},
+
+			{
+				displayName: 'Link Template UID',
+				name: 'linkTemplateUid',
+				type: 'string',
+				required: true,
+				default: '',
+				displayOptions: {
+					show: {
+						resource: ['template'],
+						operation: [
+							'getLinkTemplate',
+							'deleteLinkTemplate',
+							'getLinkTemplateGom',
+							'setLinkTemplateGom',
+							'getLinkTemplateRules',
+							'setLinkTemplateRules',
+							'listLinkTemplateChannelSources',
+							'getLinkTemplateChannelSource',
+							'setLinkTemplateChannelSource',
+						],
+					},
+				},
+				placeholder: 'Enter the link template UID',
+				description: 'The UID of the link template',
+			},
+
+			{
+				displayName: 'Format Template UID',
+				name: 'formatTemplateUid',
+				type: 'string',
+				required: true,
+				default: '',
+				displayOptions: {
+					show: {
+						resource: ['template'],
+						operation: [
+							'getFormatTemplate',
+							'deleteFormatTemplate',
+							'listFormatTemplateChannelSources',
+							'getFormatTemplateChannelSource',
+							'setFormatTemplateChannelSource',
+						],
+					},
+				},
+				placeholder: 'Enter the format template UID',
+				description: 'The UID of the format template',
+			},
+
+			{
+				displayName: 'Template Set UID',
+				name: 'templateSetUid',
+				type: 'string',
+				required: true,
+				default: '',
+				displayOptions: {
+					show: {
+						resource: ['template'],
+						operation: [
+							'getSectionTemplateChannelSource',
+							'setSectionTemplateChannelSource',
+							'getPageTemplateChannelSource',
+							'setPageTemplateChannelSource',
+							'getLinkTemplateChannelSource',
+							'setLinkTemplateChannelSource',
+							'getFormatTemplateChannelSource',
+							'setFormatTemplateChannelSource',
+						],
+					},
+				},
+				placeholder: 'Enter the template set UID',
+				description: 'The UID of the template set (channel)',
+			},
+
+			{
+				displayName: 'Schema UID',
+				name: 'schemaUid',
+				type: 'string',
+				required: true,
+				default: '',
+				displayOptions: {
+					show: {
+						resource: ['template'],
+						operation: ['getSchema'],
+					},
+				},
+				placeholder: 'Enter the schema UID',
+				description: 'The UID of the database schema',
+			},
+
 			{
 				displayName: 'Input Binary Field',
 				name: 'binaryPropertyName',
@@ -736,7 +1076,19 @@ export class CrownpeakFS implements INodeType {
 							'createDocumentGroup',
 							'executeScript',
 							'createSectionTemplate',
+							'setSectionTemplateGom',
+							'setSectionTemplateRules',
+							'setSectionTemplateChannelSource',
 							'createPageTemplate',
+							'setPageTemplateGom',
+							'setPageTemplateRules',
+							'setPageTemplateChannelSource',
+							'createLinkTemplate',
+							'setLinkTemplateGom',
+							'setLinkTemplateRules',
+							'setLinkTemplateChannelSource',
+							'createFormatTemplate',
+							'setFormatTemplateChannelSource',
 						],
 					},
 				},
@@ -761,7 +1113,7 @@ export class CrownpeakFS implements INodeType {
 			let headers: IDataObject = {};
 			let body: FormData | IDataObject | string | undefined;
 
-			let isBinaryEndpoint = [
+			const isBinaryEndpoint = [
 				'getBinaryDataOfMedium',
 				'getBinaryDataOfMediumByLanguage',
 				'getMediumBinaryDataByResolution',
@@ -1022,6 +1374,85 @@ export class CrownpeakFS implements INodeType {
 					method = 'POST';
 					break;
 				}
+				case 'getSectionTemplate': {
+					const id = this.getNodeParameter('projectId', i) as string;
+					const sectionTemplateUid = this.getNodeParameter('sectionTemplateUid', i) as string;
+					url = `${baseUrl}/v1/projects/${id}/templates/section-templates/${sectionTemplateUid}`;
+					method = 'GET';
+					break;
+				}
+				case 'deleteSectionTemplate': {
+					const id = this.getNodeParameter('projectId', i) as string;
+					const sectionTemplateUid = this.getNodeParameter('sectionTemplateUid', i) as string;
+					url = `${baseUrl}/v1/projects/${id}/templates/section-templates/${sectionTemplateUid}`;
+					method = 'DELETE';
+					break;
+				}
+				case 'getSectionTemplateForm': {
+					const id = this.getNodeParameter('projectId', i) as string;
+					const sectionTemplateUid = this.getNodeParameter('sectionTemplateUid', i) as string;
+					url = `${baseUrl}/v1/projects/${id}/templates/section-templates/${sectionTemplateUid}/gom/form`;
+					method = 'GET';
+					break;
+				}
+				case 'getSectionTemplateGom': {
+					const id = this.getNodeParameter('projectId', i) as string;
+					const sectionTemplateUid = this.getNodeParameter('sectionTemplateUid', i) as string;
+					url = `${baseUrl}/v1/projects/${id}/templates/section-templates/${sectionTemplateUid}/gom`;
+					method = 'GET';
+					break;
+				}
+				case 'setSectionTemplateGom': {
+					const id = this.getNodeParameter('projectId', i) as string;
+					const sectionTemplateUid = this.getNodeParameter('sectionTemplateUid', i) as string;
+					const content = this.getNodeParameter('content', i) as string;
+					url = `${baseUrl}/v1/projects/${id}/templates/section-templates/${sectionTemplateUid}/gom`;
+					body = JSON.parse(content);
+					method = 'PUT';
+					break;
+				}
+				case 'getSectionTemplateRules': {
+					const id = this.getNodeParameter('projectId', i) as string;
+					const sectionTemplateUid = this.getNodeParameter('sectionTemplateUid', i) as string;
+					url = `${baseUrl}/v1/projects/${id}/templates/section-templates/${sectionTemplateUid}/rules`;
+					method = 'GET';
+					break;
+				}
+				case 'setSectionTemplateRules': {
+					const id = this.getNodeParameter('projectId', i) as string;
+					const sectionTemplateUid = this.getNodeParameter('sectionTemplateUid', i) as string;
+					const content = this.getNodeParameter('content', i) as string;
+					url = `${baseUrl}/v1/projects/${id}/templates/section-templates/${sectionTemplateUid}/rules`;
+					body = JSON.parse(content);
+					method = 'PUT';
+					break;
+				}
+				case 'listSectionTemplateChannelSources': {
+					const id = this.getNodeParameter('projectId', i) as string;
+					const sectionTemplateUid = this.getNodeParameter('sectionTemplateUid', i) as string;
+					url = `${baseUrl}/v1/projects/${id}/templates/section-templates/${sectionTemplateUid}/channel-sources/`;
+					method = 'GET';
+					break;
+				}
+				case 'getSectionTemplateChannelSource': {
+					const id = this.getNodeParameter('projectId', i) as string;
+					const sectionTemplateUid = this.getNodeParameter('sectionTemplateUid', i) as string;
+					const templateSetUid = this.getNodeParameter('templateSetUid', i) as string;
+					url = `${baseUrl}/v1/projects/${id}/templates/section-templates/${sectionTemplateUid}/channel-sources/${templateSetUid}`;
+					method = 'GET';
+					break;
+				}
+				case 'setSectionTemplateChannelSource': {
+					const id = this.getNodeParameter('projectId', i) as string;
+					const sectionTemplateUid = this.getNodeParameter('sectionTemplateUid', i) as string;
+					const templateSetUid = this.getNodeParameter('templateSetUid', i) as string;
+					const content = this.getNodeParameter('content', i) as string;
+					url = `${baseUrl}/v1/projects/${id}/templates/section-templates/${sectionTemplateUid}/channel-sources/${templateSetUid}`;
+					body = JSON.parse(content);
+					method = 'PUT';
+					break;
+				}
+
 				case 'listPageTemplates': {
 					const id = this.getNodeParameter('projectId', i) as string;
 					url = `${baseUrl}/v1/projects/${id}/templates/page-templates/`;
@@ -1036,6 +1467,239 @@ export class CrownpeakFS implements INodeType {
 					method = 'POST';
 					break;
 				}
+				case 'getPageTemplate': {
+					const id = this.getNodeParameter('projectId', i) as string;
+					const pageTemplateUid = this.getNodeParameter('pageTemplateUid', i) as string;
+					url = `${baseUrl}/v1/projects/${id}/templates/page-templates/${pageTemplateUid}`;
+					method = 'GET';
+					break;
+				}
+				case 'deletePageTemplate': {
+					const id = this.getNodeParameter('projectId', i) as string;
+					const pageTemplateUid = this.getNodeParameter('pageTemplateUid', i) as string;
+					url = `${baseUrl}/v1/projects/${id}/templates/page-templates/${pageTemplateUid}`;
+					method = 'DELETE';
+					break;
+				}
+				case 'getPageTemplateForm': {
+					const id = this.getNodeParameter('projectId', i) as string;
+					const pageTemplateUid = this.getNodeParameter('pageTemplateUid', i) as string;
+					url = `${baseUrl}/v1/projects/${id}/templates/page-templates/${pageTemplateUid}/gom/form`;
+					method = 'GET';
+					break;
+				}
+				case 'getPageTemplateGom': {
+					const id = this.getNodeParameter('projectId', i) as string;
+					const pageTemplateUid = this.getNodeParameter('pageTemplateUid', i) as string;
+					url = `${baseUrl}/v1/projects/${id}/templates/page-templates/${pageTemplateUid}/gom`;
+					method = 'GET';
+					break;
+				}
+				case 'setPageTemplateGom': {
+					const id = this.getNodeParameter('projectId', i) as string;
+					const pageTemplateUid = this.getNodeParameter('pageTemplateUid', i) as string;
+					const content = this.getNodeParameter('content', i) as string;
+					url = `${baseUrl}/v1/projects/${id}/templates/page-templates/${pageTemplateUid}/gom`;
+					body = JSON.parse(content);
+					method = 'PUT';
+					break;
+				}
+				case 'getPageTemplateRules': {
+					const id = this.getNodeParameter('projectId', i) as string;
+					const pageTemplateUid = this.getNodeParameter('pageTemplateUid', i) as string;
+					url = `${baseUrl}/v1/projects/${id}/templates/page-templates/${pageTemplateUid}/rules`;
+					method = 'GET';
+					break;
+				}
+				case 'setPageTemplateRules': {
+					const id = this.getNodeParameter('projectId', i) as string;
+					const pageTemplateUid = this.getNodeParameter('pageTemplateUid', i) as string;
+					const content = this.getNodeParameter('content', i) as string;
+					url = `${baseUrl}/v1/projects/${id}/templates/page-templates/${pageTemplateUid}/rules`;
+					body = JSON.parse(content);
+					method = 'PUT';
+					break;
+				}
+				case 'listPageTemplateChannelSources': {
+					const id = this.getNodeParameter('projectId', i) as string;
+					const pageTemplateUid = this.getNodeParameter('pageTemplateUid', i) as string;
+					url = `${baseUrl}/v1/projects/${id}/templates/page-templates/${pageTemplateUid}/channel-sources/`;
+					method = 'GET';
+					break;
+				}
+				case 'getPageTemplateChannelSource': {
+					const id = this.getNodeParameter('projectId', i) as string;
+					const pageTemplateUid = this.getNodeParameter('pageTemplateUid', i) as string;
+					const templateSetUid = this.getNodeParameter('templateSetUid', i) as string;
+					url = `${baseUrl}/v1/projects/${id}/templates/page-templates/${pageTemplateUid}/channel-sources/${templateSetUid}`;
+					method = 'GET';
+					break;
+				}
+				case 'setPageTemplateChannelSource': {
+					const id = this.getNodeParameter('projectId', i) as string;
+					const pageTemplateUid = this.getNodeParameter('pageTemplateUid', i) as string;
+					const templateSetUid = this.getNodeParameter('templateSetUid', i) as string;
+					const content = this.getNodeParameter('content', i) as string;
+					url = `${baseUrl}/v1/projects/${id}/templates/page-templates/${pageTemplateUid}/channel-sources/${templateSetUid}`;
+					body = JSON.parse(content);
+					method = 'PUT';
+					break;
+				}
+
+				case 'listLinkTemplates': {
+					const id = this.getNodeParameter('projectId', i) as string;
+					url = `${baseUrl}/v1/projects/${id}/templates/link-templates/`;
+					method = 'GET';
+					break;
+				}
+				case 'createLinkTemplate': {
+					const id = this.getNodeParameter('projectId', i) as string;
+					const content = this.getNodeParameter('content', i) as string;
+					url = `${baseUrl}/v1/projects/${id}/templates/link-templates/`;
+					body = JSON.parse(content);
+					method = 'POST';
+					break;
+				}
+				case 'getLinkTemplate': {
+					const id = this.getNodeParameter('projectId', i) as string;
+					const linkTemplateUid = this.getNodeParameter('linkTemplateUid', i) as string;
+					url = `${baseUrl}/v1/projects/${id}/templates/link-templates/${linkTemplateUid}`;
+					method = 'GET';
+					break;
+				}
+				case 'deleteLinkTemplate': {
+					const id = this.getNodeParameter('projectId', i) as string;
+					const linkTemplateUid = this.getNodeParameter('linkTemplateUid', i) as string;
+					url = `${baseUrl}/v1/projects/${id}/templates/link-templates/${linkTemplateUid}`;
+					method = 'DELETE';
+					break;
+				}
+				case 'getLinkTemplateGom': {
+					const id = this.getNodeParameter('projectId', i) as string;
+					const linkTemplateUid = this.getNodeParameter('linkTemplateUid', i) as string;
+					url = `${baseUrl}/v1/projects/${id}/templates/link-templates/${linkTemplateUid}/gom`;
+					method = 'GET';
+					break;
+				}
+				case 'setLinkTemplateGom': {
+					const id = this.getNodeParameter('projectId', i) as string;
+					const linkTemplateUid = this.getNodeParameter('linkTemplateUid', i) as string;
+					const content = this.getNodeParameter('content', i) as string;
+					url = `${baseUrl}/v1/projects/${id}/templates/link-templates/${linkTemplateUid}/gom`;
+					body = JSON.parse(content);
+					method = 'PUT';
+					break;
+				}
+				case 'getLinkTemplateRules': {
+					const id = this.getNodeParameter('projectId', i) as string;
+					const linkTemplateUid = this.getNodeParameter('linkTemplateUid', i) as string;
+					url = `${baseUrl}/v1/projects/${id}/templates/link-templates/${linkTemplateUid}/rules`;
+					method = 'GET';
+					break;
+				}
+				case 'setLinkTemplateRules': {
+					const id = this.getNodeParameter('projectId', i) as string;
+					const linkTemplateUid = this.getNodeParameter('linkTemplateUid', i) as string;
+					const content = this.getNodeParameter('content', i) as string;
+					url = `${baseUrl}/v1/projects/${id}/templates/link-templates/${linkTemplateUid}/rules`;
+					body = JSON.parse(content);
+					method = 'PUT';
+					break;
+				}
+				case 'listLinkTemplateChannelSources': {
+					const id = this.getNodeParameter('projectId', i) as string;
+					const linkTemplateUid = this.getNodeParameter('linkTemplateUid', i) as string;
+					url = `${baseUrl}/v1/projects/${id}/templates/link-templates/${linkTemplateUid}/channel-sources/`;
+					method = 'GET';
+					break;
+				}
+				case 'getLinkTemplateChannelSource': {
+					const id = this.getNodeParameter('projectId', i) as string;
+					const linkTemplateUid = this.getNodeParameter('linkTemplateUid', i) as string;
+					const templateSetUid = this.getNodeParameter('templateSetUid', i) as string;
+					url = `${baseUrl}/v1/projects/${id}/templates/link-templates/${linkTemplateUid}/channel-sources/${templateSetUid}`;
+					method = 'GET';
+					break;
+				}
+				case 'setLinkTemplateChannelSource': {
+					const id = this.getNodeParameter('projectId', i) as string;
+					const linkTemplateUid = this.getNodeParameter('linkTemplateUid', i) as string;
+					const templateSetUid = this.getNodeParameter('templateSetUid', i) as string;
+					const content = this.getNodeParameter('content', i) as string;
+					url = `${baseUrl}/v1/projects/${id}/templates/link-templates/${linkTemplateUid}/channel-sources/${templateSetUid}`;
+					body = JSON.parse(content);
+					method = 'PUT';
+					break;
+				}
+
+				case 'listFormatTemplates': {
+					const id = this.getNodeParameter('projectId', i) as string;
+					url = `${baseUrl}/v1/projects/${id}/templates/format-templates/`;
+					method = 'GET';
+					break;
+				}
+				case 'createFormatTemplate': {
+					const id = this.getNodeParameter('projectId', i) as string;
+					const content = this.getNodeParameter('content', i) as string;
+					url = `${baseUrl}/v1/projects/${id}/templates/format-templates/`;
+					body = JSON.parse(content);
+					method = 'POST';
+					break;
+				}
+				case 'getFormatTemplate': {
+					const id = this.getNodeParameter('projectId', i) as string;
+					const formatTemplateUid = this.getNodeParameter('formatTemplateUid', i) as string;
+					url = `${baseUrl}/v1/projects/${id}/templates/format-templates/${formatTemplateUid}`;
+					method = 'GET';
+					break;
+				}
+				case 'deleteFormatTemplate': {
+					const id = this.getNodeParameter('projectId', i) as string;
+					const formatTemplateUid = this.getNodeParameter('formatTemplateUid', i) as string;
+					url = `${baseUrl}/v1/projects/${id}/templates/format-templates/${formatTemplateUid}`;
+					method = 'DELETE';
+					break;
+				}
+				case 'listFormatTemplateChannelSources': {
+					const id = this.getNodeParameter('projectId', i) as string;
+					const formatTemplateUid = this.getNodeParameter('formatTemplateUid', i) as string;
+					url = `${baseUrl}/v1/projects/${id}/templates/format-templates/${formatTemplateUid}/channel-sources/`;
+					method = 'GET';
+					break;
+				}
+				case 'getFormatTemplateChannelSource': {
+					const id = this.getNodeParameter('projectId', i) as string;
+					const formatTemplateUid = this.getNodeParameter('formatTemplateUid', i) as string;
+					const templateSetUid = this.getNodeParameter('templateSetUid', i) as string;
+					url = `${baseUrl}/v1/projects/${id}/templates/format-templates/${formatTemplateUid}/channel-sources/${templateSetUid}`;
+					method = 'GET';
+					break;
+				}
+				case 'setFormatTemplateChannelSource': {
+					const id = this.getNodeParameter('projectId', i) as string;
+					const formatTemplateUid = this.getNodeParameter('formatTemplateUid', i) as string;
+					const templateSetUid = this.getNodeParameter('templateSetUid', i) as string;
+					const content = this.getNodeParameter('content', i) as string;
+					url = `${baseUrl}/v1/projects/${id}/templates/format-templates/${formatTemplateUid}/channel-sources/${templateSetUid}`;
+					body = JSON.parse(content);
+					method = 'PUT';
+					break;
+				}
+
+				case 'listSchemas': {
+					const id = this.getNodeParameter('projectId', i) as string;
+					url = `${baseUrl}/v1/projects/${id}/templates/schemas/`;
+					method = 'GET';
+					break;
+				}
+				case 'getSchema': {
+					const id = this.getNodeParameter('projectId', i) as string;
+					const schemaUid = this.getNodeParameter('schemaUid', i) as string;
+					url = `${baseUrl}/v1/projects/${id}/templates/schemas/${schemaUid}`;
+					method = 'GET';
+					break;
+				}
+
 				case 'addSectionToBody': {
 					const id = this.getNodeParameter('projectId', i) as string;
 					const pageUid = this.getNodeParameter('pageUid', i) as string;
@@ -1141,7 +1805,7 @@ export class CrownpeakFS implements INodeType {
 						json: true,
 					});
 
-				const sectionPatchBody = {
+					const sectionPatchBody = {
 						name: currentSectionEditor.name,
 						type: currentSectionEditor.type,
 						...JSON.parse(content),
