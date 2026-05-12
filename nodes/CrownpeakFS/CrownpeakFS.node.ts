@@ -9,8 +9,6 @@ import {
 	NodeOperationError,
 } from 'n8n-workflow';
 import FormData from 'form-data';
-import fs from 'node:fs';
-import path from 'node:path';
 
 export class CrownpeakFS implements INodeType {
 	description: INodeTypeDescription = {
@@ -93,9 +91,19 @@ export class CrownpeakFS implements INodeType {
 						action: 'Get binary data of medium',
 					},
 					{
+						name: 'Get Binary Data Of Medium By Language',
+						value: 'getBinaryDataOfMediumByLanguage',
+						action: 'Get binary data of medium by language',
+					},
+					{
 						name: 'Upload Binary Data To Medium',
 						value: 'uploadBinaryDataToMedium',
 						action: 'Upload binary data to medium',
+					},
+					{
+						name: 'Upload Binary Data To Medium By Language',
+						value: 'uploadBinaryDataToMediumByLanguage',
+						action: 'Upload binary data to medium by language',
 					},
 					{
 						name: 'Create Medium',
@@ -106,6 +114,46 @@ export class CrownpeakFS implements INodeType {
 						name: 'Get Medium',
 						value: 'getMedium',
 						action: 'Get medium',
+					},
+					{
+						name: 'Delete Medium',
+						value: 'deleteMedium',
+						action: 'Delete medium',
+					},
+					{
+						name: 'Rename Medium',
+						value: 'renameMedium',
+						action: 'Rename medium',
+					},
+					{
+						name: 'Execute Actions On Medium',
+						value: 'executeActionsOnMedium',
+						action: 'Execute actions on medium',
+					},
+					{
+						name: 'Get Medium Usages',
+						value: 'getMediumUsages',
+						action: 'Get usages of medium',
+					},
+					{
+						name: 'Get Medium Revisions',
+						value: 'getMediumRevisions',
+						action: 'Get all revisions of medium',
+					},
+					{
+						name: 'Get Medium Revision By ID',
+						value: 'getMediumRevisionById',
+						action: 'Get single revision of medium',
+					},
+					{
+						name: 'Get Medium Binary Data By Resolution',
+						value: 'getMediumBinaryDataByResolution',
+						action: 'Get binary data of medium for a specific resolution',
+					},
+					{
+						name: 'Get Medium Binary Data By Resolution And Language',
+						value: 'getMediumBinaryDataByResolutionAndLanguage',
+						action: 'Get binary data of medium for a specific resolution and language',
 					},
 				],
 				default: 'getMedium',
@@ -130,6 +178,11 @@ export class CrownpeakFS implements INodeType {
 						name: 'Get Project',
 						value: 'getProject',
 						action: 'Get project',
+					},
+					{
+						name: 'Get Project Resolutions',
+						value: 'getProjectResolutions',
+						action: 'Get project resolutions',
 					},
 				],
 				default: 'listProjects',
@@ -507,19 +560,64 @@ export class CrownpeakFS implements INodeType {
 				description: 'The name of the script to execute',
 			},
 			{
-				displayName: 'File Path',
-				name: 'filePath',
+				displayName: 'Input Binary Field',
+				name: 'binaryPropertyName',
 				type: 'string',
-				default: '',
+				default: 'data',
 				required: true,
 				displayOptions: {
 					show: {
 						resource: ['media'],
-						operation: ['uploadBinaryDataToMedium'],
+						operation: ['uploadBinaryDataToMedium', 'uploadBinaryDataToMediumByLanguage'],
 					},
 				},
-				placeholder: 'Enter the file path',
-				description: 'The file path to the file to upload',
+				placeholder: 'data',
+				description: 'Name of the binary property in the input item that contains the file to upload',
+			},
+			{
+				displayName: 'Language',
+				name: 'language',
+				type: 'string',
+				required: true,
+				default: '',
+				displayOptions: {
+					show: {
+						resource: ['media'],
+						operation: ['getBinaryDataOfMediumByLanguage', 'uploadBinaryDataToMediumByLanguage', 'getMediumBinaryDataByResolutionAndLanguage'],
+					},
+				},
+				placeholder: 'e.g. EN',
+				description: 'The language abbreviation for the binary data',
+			},
+			{
+				displayName: 'Resolution UID',
+				name: 'resolutionUid',
+				type: 'string',
+				required: true,
+				default: '',
+				displayOptions: {
+					show: {
+						resource: ['media'],
+						operation: ['getMediumBinaryDataByResolution', 'getMediumBinaryDataByResolutionAndLanguage'],
+					},
+				},
+				placeholder: 'Enter the resolution UID',
+				description: 'The UID of the resolution to use for the binary data',
+			},
+			{
+				displayName: 'Revision ID',
+				name: 'revisionId',
+				type: 'string',
+				required: true,
+				default: '',
+				displayOptions: {
+					show: {
+						resource: ['media'],
+						operation: ['getMediumRevisionById'],
+					},
+				},
+				placeholder: 'Enter the revision ID',
+				description: 'The ID of the revision to retrieve',
 			},
 			{
 				displayName: 'Content',
@@ -535,6 +633,8 @@ export class CrownpeakFS implements INodeType {
 						resource: ['page', 'pageReference', 'script', 'template', 'media'],
 						operation: [
 							'createMedium',
+							'executeActionsOnMedium',
+							'renameMedium',
 							'addSectionToBody',
 							'executeActionsOnPage',
 							'updateInputElementOfForm',
@@ -566,9 +666,14 @@ export class CrownpeakFS implements INodeType {
 			let method: IHttpRequestMethods;
 			let url = '';
 			let headers: IDataObject = {};
-			let body: FormData | string | undefined;
+			let body: FormData | IDataObject | string | undefined;
 
-			let isBinaryEndpoint = operation === 'getBinaryDataOfMedium';
+			let isBinaryEndpoint = [
+				'getBinaryDataOfMedium',
+				'getBinaryDataOfMediumByLanguage',
+				'getMediumBinaryDataByResolution',
+				'getMediumBinaryDataByResolutionAndLanguage',
+			].includes(operation);
 
 			switch (operation) {
 				case 'getBinaryDataOfMedium': {
@@ -582,15 +687,12 @@ export class CrownpeakFS implements INodeType {
 				case 'uploadBinaryDataToMedium': {
 					const id = this.getNodeParameter('projectId', i) as string;
 					const mediumUid = this.getNodeParameter('mediumUid', i) as string;
-					const filePath = this.getNodeParameter('filePath', i) as string;
-
-					if (!fs.existsSync(filePath)) {
-						throw new NodeOperationError(this.getNode(), `File not found at path: ${filePath}`);
-					}
+					const binaryPropertyName = this.getNodeParameter('binaryPropertyName', i) as string;
+					const binaryData = this.helpers.assertBinaryData(i, binaryPropertyName);
+					const fileBuffer = await this.helpers.getBinaryDataBuffer(i, binaryPropertyName);
+					const fileName = binaryData.fileName ?? 'upload';
 
 					const formData = new FormData();
-					const fileName = path.basename(filePath);
-					const fileBuffer = fs.readFileSync(filePath);
 					formData.append('file', fileBuffer, fileName);
 
 					url = `${baseUrl}/v1/projects/${id}/media/${mediumUid}/data`;
@@ -601,9 +703,35 @@ export class CrownpeakFS implements INodeType {
 				case 'createMedium': {
 					const id = this.getNodeParameter('projectId', i) as string;
 					const content = this.getNodeParameter('content', i) as string;
-					url = `${baseUrl}/v1/projects/${id}/media`;
+					url = `${baseUrl}/v1/projects/${id}/media/`;
 					body = JSON.parse(content);
 					method = 'POST';
+					break;
+				}
+				case 'getBinaryDataOfMediumByLanguage': {
+					const id = this.getNodeParameter('projectId', i) as string;
+					const mediumUid = this.getNodeParameter('mediumUid', i) as string;
+					const language = this.getNodeParameter('language', i) as string;
+					url = `${baseUrl}/v1/projects/${id}/media/${mediumUid}/data/${language}`;
+					method = 'GET';
+					headers.Accept = '*/*';
+					break;
+				}
+				case 'uploadBinaryDataToMediumByLanguage': {
+					const id = this.getNodeParameter('projectId', i) as string;
+					const mediumUid = this.getNodeParameter('mediumUid', i) as string;
+					const language = this.getNodeParameter('language', i) as string;
+					const binaryPropertyName = this.getNodeParameter('binaryPropertyName', i) as string;
+					const binaryData = this.helpers.assertBinaryData(i, binaryPropertyName);
+					const fileBuffer = await this.helpers.getBinaryDataBuffer(i, binaryPropertyName);
+					const fileName = binaryData.fileName ?? 'upload';
+
+					const formData = new FormData();
+					formData.append('file', fileBuffer, fileName);
+
+					url = `${baseUrl}/v1/projects/${id}/media/${mediumUid}/data/${language}`;
+					body = formData;
+					method = 'PUT';
 					break;
 				}
 				case 'getMedium': {
@@ -611,6 +739,72 @@ export class CrownpeakFS implements INodeType {
 					const mediumUid = this.getNodeParameter('mediumUid', i) as string;
 					url = `${baseUrl}/v1/projects/${id}/media/${mediumUid}`;
 					method = 'GET';
+					break;
+				}
+				case 'deleteMedium': {
+					const id = this.getNodeParameter('projectId', i) as string;
+					const mediumUid = this.getNodeParameter('mediumUid', i) as string;
+					url = `${baseUrl}/v1/projects/${id}/media/${mediumUid}`;
+					method = 'DELETE';
+					break;
+				}
+				case 'renameMedium': {
+					const id = this.getNodeParameter('projectId', i) as string;
+					const mediumUid = this.getNodeParameter('mediumUid', i) as string;
+					const content = this.getNodeParameter('content', i) as string;
+					url = `${baseUrl}/v1/projects/${id}/media/${mediumUid}/rename`;
+					body = JSON.parse(content);
+					method = 'PATCH';
+					break;
+				}
+				case 'executeActionsOnMedium': {
+					const id = this.getNodeParameter('projectId', i) as string;
+					const mediumUid = this.getNodeParameter('mediumUid', i) as string;
+					const content = this.getNodeParameter('content', i) as string;
+					url = `${baseUrl}/v1/projects/${id}/media/${mediumUid}/actions`;
+					body = JSON.parse(content);
+					method = 'POST';
+					break;
+				}
+				case 'getMediumUsages': {
+					const id = this.getNodeParameter('projectId', i) as string;
+					const mediumUid = this.getNodeParameter('mediumUid', i) as string;
+					url = `${baseUrl}/v1/projects/${id}/media/${mediumUid}/usages`;
+					method = 'GET';
+					break;
+				}
+				case 'getMediumRevisions': {
+					const id = this.getNodeParameter('projectId', i) as string;
+					const mediumUid = this.getNodeParameter('mediumUid', i) as string;
+					url = `${baseUrl}/v1/projects/${id}/media/${mediumUid}/revisions/`;
+					method = 'GET';
+					break;
+				}
+				case 'getMediumRevisionById': {
+					const id = this.getNodeParameter('projectId', i) as string;
+					const mediumUid = this.getNodeParameter('mediumUid', i) as string;
+					const revisionId = this.getNodeParameter('revisionId', i) as string;
+					url = `${baseUrl}/v1/projects/${id}/media/${mediumUid}/revisions/${revisionId}`;
+					method = 'GET';
+					break;
+				}
+				case 'getMediumBinaryDataByResolution': {
+					const id = this.getNodeParameter('projectId', i) as string;
+					const mediumUid = this.getNodeParameter('mediumUid', i) as string;
+					const resolutionUid = this.getNodeParameter('resolutionUid', i) as string;
+					url = `${baseUrl}/v1/projects/${id}/media/${mediumUid}/data/resolution/${resolutionUid}`;
+					method = 'GET';
+					headers.Accept = '*/*';
+					break;
+				}
+				case 'getMediumBinaryDataByResolutionAndLanguage': {
+					const id = this.getNodeParameter('projectId', i) as string;
+					const mediumUid = this.getNodeParameter('mediumUid', i) as string;
+					const resolutionUid = this.getNodeParameter('resolutionUid', i) as string;
+					const language = this.getNodeParameter('language', i) as string;
+					url = `${baseUrl}/v1/projects/${id}/media/${mediumUid}/data/resolution/${resolutionUid}/${language}`;
+					method = 'GET';
+					headers.Accept = '*/*';
 					break;
 				}
 				case 'searchProject': {
@@ -646,28 +840,28 @@ export class CrownpeakFS implements INodeType {
 				}
 				case 'listSectionTemplates': {
 					const id = this.getNodeParameter('projectId', i) as string;
-					url = `${baseUrl}/v1/projects/${id}/templates/section-templates`;
+					url = `${baseUrl}/v1/projects/${id}/templates/section-templates/`;
 					method = 'GET';
 					break;
 				}
 				case 'createSectionTemplate': {
 					const id = this.getNodeParameter('projectId', i) as string;
 					const content = this.getNodeParameter('content', i) as string;
-					url = `${baseUrl}/v1/projects/${id}/templates/section-templates`;
+					url = `${baseUrl}/v1/projects/${id}/templates/section-templates/`;
 					body = JSON.parse(content);
 					method = 'POST';
 					break;
 				}
 				case 'listPageTemplates': {
 					const id = this.getNodeParameter('projectId', i) as string;
-					url = `${baseUrl}/v1/projects/${id}/templates/page-templates`;
+					url = `${baseUrl}/v1/projects/${id}/templates/page-templates/`;
 					method = 'GET';
 					break;
 				}
 				case 'createPageTemplate': {
 					const id = this.getNodeParameter('projectId', i) as string;
 					const content = this.getNodeParameter('content', i) as string;
-					url = `${baseUrl}/v1/projects/${id}/templates/page-templates`;
+					url = `${baseUrl}/v1/projects/${id}/templates/page-templates/`;
 					body = JSON.parse(content);
 					method = 'POST';
 					break;
@@ -719,10 +913,36 @@ export class CrownpeakFS implements INodeType {
 					const pageUid = this.getNodeParameter('pageUid', i) as string;
 					const editorName = this.getNodeParameter('editorName', i) as string;
 					const content = this.getNodeParameter('content', i) as string;
-					url = `${baseUrl}/v1/projects/${id}/pages/${pageUid}/form/${editorName}`;
-					body = JSON.parse(content);
-					method = 'PATCH';
-					break;
+					const authHeader = 'Basic ' + Buffer.from(`${username}:${password}`).toString('base64');
+					const formUrl = `${baseUrl}/v1/projects/${id}/pages/${pageUid}/form/${editorName}`;
+
+					const currentEditor = await this.helpers.httpRequest({
+						method: 'GET',
+						url: formUrl,
+						headers: { Authorization: authHeader, Accept: 'application/json' },
+						json: true,
+					});
+
+					const patchBody = {
+						name: currentEditor.name,
+						type: currentEditor.type,
+						...JSON.parse(content),
+					};
+
+					const patchResponse = await this.helpers.httpRequest({
+						method: 'PATCH',
+						url: formUrl,
+						headers: {
+							Authorization: authHeader,
+							'Content-Type': 'application/json',
+							Accept: 'application/json',
+						},
+						body: patchBody,
+						json: true,
+					});
+
+					items[i].json = patchResponse;
+					continue;
 				}
 				case 'getInputElementOfSectionForm': {
 					const id = this.getNodeParameter('projectId', i) as string;
@@ -741,10 +961,36 @@ export class CrownpeakFS implements INodeType {
 					const sectionName = this.getNodeParameter('sectionName', i) as string;
 					const editorName = this.getNodeParameter('editorName', i) as string;
 					const content = this.getNodeParameter('content', i) as string;
-					url = `${baseUrl}/v1/projects/${id}/pages/${pageUid}/bodies/${bodyName}/sections/${sectionName}/form/${editorName}`;
-					body = JSON.parse(content);
-					method = 'PATCH';
-					break;
+					const authHeader = 'Basic ' + Buffer.from(`${username}:${password}`).toString('base64');
+					const sectionFormUrl = `${baseUrl}/v1/projects/${id}/pages/${pageUid}/bodies/${bodyName}/sections/${sectionName}/form/${editorName}`;
+
+					const currentSectionEditor = await this.helpers.httpRequest({
+						method: 'GET',
+						url: sectionFormUrl,
+						headers: { Authorization: authHeader, Accept: 'application/json' },
+						json: true,
+					});
+
+				const sectionPatchBody = {
+						name: currentSectionEditor.name,
+						type: currentSectionEditor.type,
+						...JSON.parse(content),
+					};
+
+					const sectionPatchResponse = await this.helpers.httpRequest({
+						method: 'PATCH',
+						url: sectionFormUrl,
+						headers: {
+							Authorization: authHeader,
+							'Content-Type': 'application/json',
+							Accept: 'application/json',
+						},
+						body: sectionPatchBody,
+						json: true,
+					});
+
+					items[i].json = sectionPatchResponse;
+					continue;
 				}
 				case 'getPage': {
 					const id = this.getNodeParameter('projectId', i) as string;
@@ -763,7 +1009,7 @@ export class CrownpeakFS implements INodeType {
 				case 'getBodiesOfPage': {
 					const id = this.getNodeParameter('projectId', i) as string;
 					const pageUid = this.getNodeParameter('pageUid', i) as string;
-					url = `${baseUrl}/v1/projects/${id}/pages/${pageUid}/bodies`;
+					url = `${baseUrl}/v1/projects/${id}/pages/${pageUid}/bodies/`;
 					method = 'GET';
 					break;
 				}
@@ -811,6 +1057,12 @@ export class CrownpeakFS implements INodeType {
 					method = 'GET';
 					break;
 				}
+				case 'getProjectResolutions': {
+					const id = this.getNodeParameter('projectId', i) as string;
+					url = `${baseUrl}/v1/projects/${id}/resolutions`;
+					method = 'GET';
+					break;
+				}
 				default:
 					throw new NodeOperationError(this.getNode(), `Unsupported operation: ${operation}`);
 			}
@@ -826,12 +1078,7 @@ export class CrownpeakFS implements INodeType {
 					Accept: headers.Accept ?? (isBinaryEndpoint ? '*/*' : 'application/json'),
 				},
 				body,
-				json:
-					!isBinaryEndpoint &&
-					!(body instanceof FormData) &&
-					String(headers.Accept ?? 'application/json')
-						.toLowerCase()
-						.includes('json'),
+				json: !isBinaryEndpoint && !(body instanceof FormData),
 				encoding: isBinaryEndpoint ? 'arraybuffer' : undefined,
 				returnFullResponse: isBinaryEndpoint ? true : undefined,
 			});
@@ -843,6 +1090,9 @@ export class CrownpeakFS implements INodeType {
 				items[i].binary = {
 					data: await this.helpers.prepareBinaryData(response.body, fileName),
 				};
+			} else if (String(headers.Accept ?? '').includes('text/plain')) {
+
+				items[i].json = { result: response };
 			} else {
 				items[i].json = response;
 			}

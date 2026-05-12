@@ -13,9 +13,19 @@ export const crownpeakFSOperations: INodeProperties[] = [
 				action: 'Get binary data of medium',
 			},
 			{
+				name: 'Get Binary Data Of Medium By Language',
+				value: 'getBinaryDataOfMediumByLanguage',
+				action: 'Get binary data of medium by language',
+			},
+			{
 				name: 'Upload Binary Data To Medium',
 				value: 'uploadBinaryDataToMedium',
 				action: 'Upload binary data to medium',
+			},
+			{
+				name: 'Upload Binary Data To Medium By Language',
+				value: 'uploadBinaryDataToMediumByLanguage',
+				action: 'Upload binary data to medium by language',
 			},
 			{
 				name: 'Create Medium',
@@ -26,6 +36,46 @@ export const crownpeakFSOperations: INodeProperties[] = [
 				name: 'Get Medium',
 				value: 'getMedium',
 				action: 'Get medium',
+			},
+			{
+				name: 'Delete Medium',
+				value: 'deleteMedium',
+				action: 'Delete medium',
+			},
+			{
+				name: 'Rename Medium',
+				value: 'renameMedium',
+				action: 'Rename medium',
+			},
+			{
+				name: 'Execute Actions On Medium',
+				value: 'executeActionsOnMedium',
+				action: 'Execute actions on medium',
+			},
+			{
+				name: 'Get Medium Usages',
+				value: 'getMediumUsages',
+				action: 'Get usages of medium',
+			},
+			{
+				name: 'Get Medium Revisions',
+				value: 'getMediumRevisions',
+				action: 'Get all revisions of medium',
+			},
+			{
+				name: 'Get Medium Revision By ID',
+				value: 'getMediumRevisionById',
+				action: 'Get single revision of medium',
+			},
+			{
+				name: 'Get Medium Binary Data By Resolution',
+				value: 'getMediumBinaryDataByResolution',
+				action: 'Get binary data of medium for a specific resolution',
+			},
+			{
+				name: 'Get Medium Binary Data By Resolution And Language',
+				value: 'getMediumBinaryDataByResolutionAndLanguage',
+				action: 'Get binary data of medium for a specific resolution and language',
 			},
 			{
 				name: 'Search in FirstSpirit Project',
@@ -151,6 +201,11 @@ export const crownpeakFSOperations: INodeProperties[] = [
 				name: 'Get FirstSpirit Project',
 				value: 'getProject',
 				action: 'Get a FirstSpirit project',
+			},
+			{
+				name: 'Get Project Resolutions',
+				value: 'getProjectResolutions',
+				action: 'Get resolutions of a FirstSpirit project',
 			},
 		],
 		default: 'listProjects',
