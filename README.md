@@ -58,6 +58,10 @@ To migrate a workflow built against an older version:
 2. Copy the values from the old `Content` JSON into the new typed fields.
 3. Place any remaining keys into `Additional Properties`.
 
+### Output Shape
+
+List, search, and "get many" operations now emit one n8n item per element instead of a single item carrying an array. Workflows that previously read `$json.items[0]` or `$json[0]` from the response should switch to per-item expressions (`$json.uid`, `$json.displayName`, etc.). Empty list responses produce zero output items. Every output item carries a `pairedItem` link back to the originating input.
+
 ## Resource Selection
 
 Where the FirstSpirit REST API exposes list or search endpoints, the node lets you select resources from n8n resource locators. Each locator keeps a manual ID or name mode for expressions and advanced workflows.

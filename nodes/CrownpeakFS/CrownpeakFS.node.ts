@@ -33,23 +33,7 @@ import {
 	updateInputElementOfSectionFields,
 } from './descriptions/createUpdateFields';
 import { buildRequestBody } from './helpers/options';
-
-function extractItems(response: unknown): IDataObject[] {
-	if (Array.isArray(response)) {
-		return response as IDataObject[];
-	}
-
-	if (response && typeof response === 'object') {
-		const responseObject = response as IDataObject;
-		for (const key of ['items', 'data', 'results']) {
-			if (Array.isArray(responseObject[key])) {
-				return responseObject[key] as IDataObject[];
-			}
-		}
-	}
-
-	return [];
-}
+import { extractItems, pushResponse } from './helpers/output';
 
 function withDisplayOptions(
 	properties: INodeProperties[],
@@ -529,389 +513,405 @@ export class CrownpeakFS implements INodeType {
 
 	async execute(this: IExecuteFunctions): Promise<INodeExecutionData[][]> {
 		const items = this.getInputData();
+		const returnData: INodeExecutionData[] = [];
 
 		for (let i = 0; i < items.length; i++) {
-			const operation = this.getNodeParameter('operation', i) as string;
-			const { username, password, baseUrl } = (await this.getCredentials('crownpeakFSApi')) as {
-				username: string;
-				password: string;
-				baseUrl: string;
-			};
+			try {
+				const operation = this.getNodeParameter('operation', i) as string;
+				const { username, password, baseUrl } = (await this.getCredentials('crownpeakFSApi')) as {
+					username: string;
+					password: string;
+					baseUrl: string;
+				};
 
-			let method: IHttpRequestMethods;
-			let url = '';
-			let headers: IDataObject = {};
-			let body: Buffer | IDataObject | string | undefined;
+				let method: IHttpRequestMethods;
+				let url = '';
+				let headers: IDataObject = {};
+				let body: Buffer | IDataObject | string | undefined;
 
-			let isBinaryEndpoint = operation === 'getBinaryDataOfMedium';
+				const isBinaryEndpoint = operation === 'getBinaryDataOfMedium';
 
-			switch (operation) {
-				case 'getBinaryDataOfMedium': {
-					const id = getLocatorValue(this.getNodeParameter('projectId', i));
-					const mediumUid = getLocatorValue(this.getNodeParameter('mediumUid', i));
-					url = `${baseUrl}/v1/projects/${id}/media/${mediumUid}/data`;
-					method = 'GET';
-					headers.Accept = '*/*';
-					break;
-				}
-				case 'uploadBinaryDataToMedium': {
-					const id = getLocatorValue(this.getNodeParameter('projectId', i));
-					const mediumUid = getLocatorValue(this.getNodeParameter('mediumUid', i));
-					const binaryPropertyName = this.getNodeParameter('binaryPropertyName', i) as string;
-					const upload = await getBinaryUpload(this, items[i], i, binaryPropertyName);
+				switch (operation) {
+					case 'getBinaryDataOfMedium': {
+						const id = getLocatorValue(this.getNodeParameter('projectId', i));
+						const mediumUid = getLocatorValue(this.getNodeParameter('mediumUid', i));
+						url = `${baseUrl}/v1/projects/${id}/media/${mediumUid}/data`;
+						method = 'GET';
+						headers.Accept = '*/*';
+						break;
+					}
+					case 'uploadBinaryDataToMedium': {
+						const id = getLocatorValue(this.getNodeParameter('projectId', i));
+						const mediumUid = getLocatorValue(this.getNodeParameter('mediumUid', i));
+						const binaryPropertyName = this.getNodeParameter('binaryPropertyName', i) as string;
+						const upload = await getBinaryUpload(this, items[i], i, binaryPropertyName);
 
-					url = `${baseUrl}/v1/projects/${id}/media/${mediumUid}/data`;
-					body = upload.buffer;
-					method = 'PUT';
-					headers['Content-Type'] = upload.mimeType;
-					break;
-				}
-				case 'createMedium': {
-					const id = getLocatorValue(this.getNodeParameter('projectId', i));
-					const typed = {
-						uid: this.getNodeParameter('uid', i, '') as string,
-						filename: this.getNodeParameter('filename', i, '') as string,
-						type: this.getNodeParameter('type', i, '') as string,
-					};
-					const additional = this.getNodeParameter('additionalProperties', i, '{}') as string;
-					url = `${baseUrl}/v1/projects/${id}/media`;
-					body = buildRequestBody(typed, additional);
-					method = 'POST';
-					break;
-				}
-				case 'getMedium': {
-					const id = getLocatorValue(this.getNodeParameter('projectId', i));
-					const mediumUid = getLocatorValue(this.getNodeParameter('mediumUid', i));
-					url = `${baseUrl}/v1/projects/${id}/media/${mediumUid}`;
-					method = 'GET';
-					break;
-				}
-				case 'searchProject': {
-					const id = getLocatorValue(this.getNodeParameter('projectId', i));
-					const q = this.getNodeParameter('searchQuery', i) as string;
-					const returnAll = this.getNodeParameter('returnAll', i) as boolean;
-					if (returnAll) {
-						const limit = this.getNodeParameter('limit', i) as number;
-						const collected: IDataObject[] = [];
-						let page = 0;
-						const size = Math.min(limit, 100);
+						url = `${baseUrl}/v1/projects/${id}/media/${mediumUid}/data`;
+						body = upload.buffer;
+						method = 'PUT';
+						headers['Content-Type'] = upload.mimeType;
+						break;
+					}
+					case 'createMedium': {
+						const id = getLocatorValue(this.getNodeParameter('projectId', i));
+						const typed = {
+							uid: this.getNodeParameter('uid', i, '') as string,
+							filename: this.getNodeParameter('filename', i, '') as string,
+							type: this.getNodeParameter('type', i, '') as string,
+						};
+						const additional = this.getNodeParameter('additionalProperties', i, '{}') as string;
+						url = `${baseUrl}/v1/projects/${id}/media`;
+						body = buildRequestBody(typed, additional);
+						method = 'POST';
+						break;
+					}
+					case 'getMedium': {
+						const id = getLocatorValue(this.getNodeParameter('projectId', i));
+						const mediumUid = getLocatorValue(this.getNodeParameter('mediumUid', i));
+						url = `${baseUrl}/v1/projects/${id}/media/${mediumUid}`;
+						method = 'GET';
+						break;
+					}
+					case 'searchProject': {
+						const id = getLocatorValue(this.getNodeParameter('projectId', i));
+						const q = this.getNodeParameter('searchQuery', i) as string;
+						const returnAll = this.getNodeParameter('returnAll', i) as boolean;
+						if (returnAll) {
+							const limit = this.getNodeParameter('limit', i) as number;
+							const collected: IDataObject[] = [];
+							let page = 0;
+							const size = Math.min(limit, 100);
 
-						while (collected.length < limit) {
-							const searchParams = new URLSearchParams({
-								q,
-								page: String(page),
-								size: String(size),
-							});
-							const response = await this.helpers.httpRequest({
-								method: 'GET',
-								url: `${baseUrl}/v1/projects/${id}/search?${searchParams.toString()}`,
-								headers: {
-									Authorization:
-										'Basic ' + Buffer.from(`${username}:${password}`).toString('base64'),
-									Accept: 'application/json',
-								},
-								json: true,
-							});
-							const pageItems = extractItems(response);
-							collected.push(...pageItems);
+							while (collected.length < limit) {
+								const searchParams = new URLSearchParams({
+									q,
+									page: String(page),
+									size: String(size),
+								});
+								const response = await this.helpers.httpRequest({
+									method: 'GET',
+									url: `${baseUrl}/v1/projects/${id}/search?${searchParams.toString()}`,
+									headers: {
+										Authorization:
+											'Basic ' + Buffer.from(`${username}:${password}`).toString('base64'),
+										Accept: 'application/json',
+									},
+									json: true,
+								});
+								const pageItems = extractItems(response);
+								collected.push(...pageItems);
 
-							if (pageItems.length < size) {
-								break;
+								if (pageItems.length < size) {
+									break;
+								}
+
+								page += 1;
 							}
 
-							page += 1;
+							pushResponse(returnData, collected.slice(0, limit), i);
+							continue;
 						}
-
-						items[i].json = { items: collected.slice(0, limit) };
-						continue;
+						const page = this.getNodeParameter('pageNumber', i) as string;
+						const size = this.getNodeParameter('pageSize', i) as string;
+						const searchParams = new URLSearchParams({ q, page, size });
+						url = `${baseUrl}/v1/projects/${id}/search?${searchParams.toString()}`;
+						method = 'GET';
+						break;
 					}
-					const page = this.getNodeParameter('pageNumber', i) as string;
-					const size = this.getNodeParameter('pageSize', i) as string;
-					const searchParams = new URLSearchParams({ q, page, size });
-					url = `${baseUrl}/v1/projects/${id}/search?${searchParams.toString()}`;
-					method = 'GET';
-					break;
+					case 'listPageReferences': {
+						const id = getLocatorValue(this.getNodeParameter('projectId', i));
+						url = `${baseUrl}/v1/projects/${id}/page-references/`;
+						method = 'GET';
+						break;
+					}
+					case 'createPageReference': {
+						const id = getLocatorValue(this.getNodeParameter('projectId', i));
+						const typed = {
+							uid: this.getNodeParameter('uid', i, '') as string,
+							pageId: this.getNodeParameter('pageId', i, 0) as number,
+							location: this.getNodeParameter('location', i, '') as string,
+						};
+						const additional = this.getNodeParameter('additionalProperties', i, '{}') as string;
+						url = `${baseUrl}/v1/projects/${id}/page-references`;
+						body = buildRequestBody(typed, additional);
+						method = 'POST';
+						break;
+					}
+					case 'getPageReferenceByUid': {
+						const id = getLocatorValue(this.getNodeParameter('projectId', i));
+						const pageReferenceUid = getLocatorValue(this.getNodeParameter('pageReferenceUid', i));
+						url = `${baseUrl}/v1/projects/${id}/page-references/${pageReferenceUid}`;
+						method = 'GET';
+						break;
+					}
+					case 'listSectionTemplates': {
+						const id = getLocatorValue(this.getNodeParameter('projectId', i));
+						url = `${baseUrl}/v1/projects/${id}/templates/section-templates`;
+						method = 'GET';
+						break;
+					}
+					case 'createSectionTemplate': {
+						const id = getLocatorValue(this.getNodeParameter('projectId', i));
+						const typed = {
+							uid: this.getNodeParameter('uid', i, '') as string,
+							name: this.getNodeParameter('name', i, '') as string,
+							description: this.getNodeParameter('description', i, '') as string,
+						};
+						const additional = this.getNodeParameter('additionalProperties', i, '{}') as string;
+						url = `${baseUrl}/v1/projects/${id}/templates/section-templates`;
+						body = buildRequestBody(typed, additional);
+						method = 'POST';
+						break;
+					}
+					case 'listPageTemplates': {
+						const id = getLocatorValue(this.getNodeParameter('projectId', i));
+						url = `${baseUrl}/v1/projects/${id}/templates/page-templates`;
+						method = 'GET';
+						break;
+					}
+					case 'createPageTemplate': {
+						const id = getLocatorValue(this.getNodeParameter('projectId', i));
+						const bodiesParam = this.getNodeParameter('bodies', i, {}) as {
+							body?: Array<{ name: string; description?: string }>;
+						};
+						const bodies = (bodiesParam.body ?? []).map((b) => ({
+							name: b.name,
+							description: b.description ?? null,
+						}));
+						const typed = {
+							uid: this.getNodeParameter('uid', i, '') as string,
+							name: this.getNodeParameter('name', i, '') as string,
+							description: this.getNodeParameter('description', i, '') as string,
+							bodies: bodies.length > 0 ? bodies : undefined,
+						};
+						const additional = this.getNodeParameter('additionalProperties', i, '{}') as string;
+						url = `${baseUrl}/v1/projects/${id}/templates/page-templates`;
+						body = buildRequestBody(typed as IDataObject, additional);
+						method = 'POST';
+						break;
+					}
+					case 'addSectionToBody': {
+						const id = getLocatorValue(this.getNodeParameter('projectId', i));
+						const pageUid = getLocatorValue(this.getNodeParameter('pageUid', i));
+						const bodyName = getLocatorValue(this.getNodeParameter('bodyName', i));
+						const sectionName = getLocatorValue(this.getNodeParameter('sectionName', i));
+						const templateUid = getLocatorValue(this.getNodeParameter('sectionTemplateUid', i));
+						url = `${baseUrl}/v1/projects/${id}/pages/${pageUid}/bodies/${bodyName}/sections/${sectionName}`;
+						body = { templateUid };
+						method = 'PUT';
+						break;
+					}
+					case 'executeActionsOnPage': {
+						const id = getLocatorValue(this.getNodeParameter('projectId', i));
+						const pageUid = getLocatorValue(this.getNodeParameter('pageUid', i));
+						const action = this.getNodeParameter('action', i, 'copy') as string;
+						const releaseOptions =
+							action === 'release'
+								? (this.getNodeParameter('releaseOptions', i, {}) as IDataObject)
+								: undefined;
+						url = `${baseUrl}/v1/projects/${id}/pages/${pageUid}/actions`;
+						body =
+							action === 'release' && releaseOptions && Object.keys(releaseOptions).length > 0
+								? { action, options: releaseOptions }
+								: { action };
+						method = 'POST';
+						break;
+					}
+					case 'listPages': {
+						const id = getLocatorValue(this.getNodeParameter('projectId', i));
+						url = `${baseUrl}/v1/projects/${id}/pages/`;
+						method = 'GET';
+						break;
+					}
+					case 'createPage': {
+						const id = getLocatorValue(this.getNodeParameter('projectId', i));
+						const typed = {
+							uid: this.getNodeParameter('uid', i, '') as string,
+							templateUid: getLocatorValue(this.getNodeParameter('templateUid', i)),
+						};
+						const additional = this.getNodeParameter('additionalProperties', i, '{}') as string;
+						url = `${baseUrl}/v1/projects/${id}/pages`;
+						body = buildRequestBody(typed, additional);
+						method = 'POST';
+						break;
+					}
+					case 'getInputElementOfForm': {
+						const id = getLocatorValue(this.getNodeParameter('projectId', i));
+						const pageUid = getLocatorValue(this.getNodeParameter('pageUid', i));
+						const editorName = this.getNodeParameter('editorName', i) as string;
+						url = `${baseUrl}/v1/projects/${id}/pages/${pageUid}/form/${editorName}`;
+						method = 'GET';
+						break;
+					}
+					case 'updateInputElementOfForm': {
+						const id = getLocatorValue(this.getNodeParameter('projectId', i));
+						const pageUid = getLocatorValue(this.getNodeParameter('pageUid', i));
+						const editorName = this.getNodeParameter('inputElementName', i, '') as string;
+						const language = this.getNodeParameter('language', i, '') as string;
+						const typed = {
+							name: editorName,
+							type: this.getNodeParameter('inputElementType', i, '') as string,
+							language: language === '' ? null : language,
+							description: this.getNodeParameter('inputElementDescription', i, '') as string,
+							configuration: JSON.parse(
+								this.getNodeParameter('inputElementConfiguration', i, '{}') as string,
+							),
+							content: JSON.parse(this.getNodeParameter('inputElementContent', i, '""') as string),
+						};
+						url = `${baseUrl}/v1/projects/${id}/pages/${pageUid}/form/${editorName}${
+							language ? `/${language}` : ''
+						}`;
+						body = typed as IDataObject;
+						method = 'PATCH';
+						break;
+					}
+					case 'getInputElementOfSectionForm': {
+						const id = getLocatorValue(this.getNodeParameter('projectId', i));
+						const pageUid = getLocatorValue(this.getNodeParameter('pageUid', i));
+						const bodyName = getLocatorValue(this.getNodeParameter('bodyName', i));
+						const sectionName = getLocatorValue(this.getNodeParameter('sectionName', i));
+						const editorName = this.getNodeParameter('editorName', i) as string;
+						url = `${baseUrl}/v1/projects/${id}/pages/${pageUid}/bodies/${bodyName}/sections/${sectionName}/form/${editorName}`;
+						method = 'GET';
+						break;
+					}
+					case 'updateInputElementOfSectionForm': {
+						const id = getLocatorValue(this.getNodeParameter('projectId', i));
+						const pageUid = getLocatorValue(this.getNodeParameter('pageUid', i));
+						const bodyName = getLocatorValue(this.getNodeParameter('bodyName', i));
+						const sectionName = getLocatorValue(this.getNodeParameter('sectionName', i));
+						const editorName = this.getNodeParameter('inputElementName', i, '') as string;
+						const language = this.getNodeParameter('language', i, '') as string;
+						const typed = {
+							name: editorName,
+							type: this.getNodeParameter('inputElementType', i, '') as string,
+							language: language === '' ? null : language,
+							description: this.getNodeParameter('inputElementDescription', i, '') as string,
+							configuration: JSON.parse(
+								this.getNodeParameter('inputElementConfiguration', i, '{}') as string,
+							),
+							content: JSON.parse(this.getNodeParameter('inputElementContent', i, '""') as string),
+						};
+						url = `${baseUrl}/v1/projects/${id}/pages/${pageUid}/bodies/${bodyName}/sections/${sectionName}/form/${editorName}${
+							language ? `/${language}` : ''
+						}`;
+						body = typed as IDataObject;
+						method = 'PATCH';
+						break;
+					}
+					case 'getPage': {
+						const id = getLocatorValue(this.getNodeParameter('projectId', i));
+						const pageUid = getLocatorValue(this.getNodeParameter('pageUid', i));
+						url = `${baseUrl}/v1/projects/${id}/pages/${pageUid}`;
+						method = 'GET';
+						break;
+					}
+					case 'getInputElementsOfFormFromPage': {
+						const id = getLocatorValue(this.getNodeParameter('projectId', i));
+						const pageUid = getLocatorValue(this.getNodeParameter('pageUid', i));
+						url = `${baseUrl}/v1/projects/${id}/pages/${pageUid}/form`;
+						method = 'GET';
+						break;
+					}
+					case 'getBodiesOfPage': {
+						const id = getLocatorValue(this.getNodeParameter('projectId', i));
+						const pageUid = getLocatorValue(this.getNodeParameter('pageUid', i));
+						url = `${baseUrl}/v1/projects/${id}/pages/${pageUid}/bodies`;
+						method = 'GET';
+						break;
+					}
+					case 'getBodyOfPageByName': {
+						const id = getLocatorValue(this.getNodeParameter('projectId', i));
+						const pageUid = getLocatorValue(this.getNodeParameter('pageUid', i));
+						const bodyName = getLocatorValue(this.getNodeParameter('bodyName', i));
+						url = `${baseUrl}/v1/projects/${id}/pages/${pageUid}/bodies/${bodyName}`;
+						method = 'GET';
+						break;
+					}
+					case 'getInputElementsOfSectionFormFromPage': {
+						const id = getLocatorValue(this.getNodeParameter('projectId', i));
+						const pageUid = getLocatorValue(this.getNodeParameter('pageUid', i));
+						const bodyName = getLocatorValue(this.getNodeParameter('bodyName', i));
+						const sectionName = getLocatorValue(this.getNodeParameter('sectionName', i));
+						url = `${baseUrl}/v1/projects/${id}/pages/${pageUid}/bodies/${bodyName}/sections/${sectionName}/form`;
+						method = 'GET';
+						break;
+					}
+					case 'listScripts': {
+						const id = getLocatorValue(this.getNodeParameter('projectId', i));
+						url = `${baseUrl}/v1/projects/${id}/scripts/`;
+						method = 'GET';
+						break;
+					}
+					case 'executeScript': {
+						const id = getLocatorValue(this.getNodeParameter('projectId', i));
+						const scriptName = getLocatorValue(this.getNodeParameter('scriptName', i));
+						const params = this.getNodeParameter('scriptParameters', i, '{}') as string;
+						url = `${baseUrl}/v1/projects/${id}/scripts/${scriptName}/execute`;
+						body = buildRequestBody({}, params);
+						method = 'POST';
+						headers.Accept = 'text/plain';
+						break;
+					}
+					case 'listProjects': {
+						url = `${baseUrl}/v1/projects/`;
+						method = 'GET';
+						break;
+					}
+					case 'getProject': {
+						const id = getLocatorValue(this.getNodeParameter('projectId', i));
+						url = `${baseUrl}/v1/projects/${id}`;
+						method = 'GET';
+						break;
+					}
+					default:
+						throw new NodeOperationError(this.getNode(), `Unsupported operation: ${operation}`);
 				}
-				case 'listPageReferences': {
-					const id = getLocatorValue(this.getNodeParameter('projectId', i));
-					url = `${baseUrl}/v1/projects/${id}/page-references/`;
-					method = 'GET';
-					break;
-				}
-				case 'createPageReference': {
-					const id = getLocatorValue(this.getNodeParameter('projectId', i));
-					const typed = {
-						uid: this.getNodeParameter('uid', i, '') as string,
-						pageId: this.getNodeParameter('pageId', i, 0) as number,
-						location: this.getNodeParameter('location', i, '') as string,
-					};
-					const additional = this.getNodeParameter('additionalProperties', i, '{}') as string;
-					url = `${baseUrl}/v1/projects/${id}/page-references`;
-					body = buildRequestBody(typed, additional);
-					method = 'POST';
-					break;
-				}
-				case 'getPageReferenceByUid': {
-					const id = getLocatorValue(this.getNodeParameter('projectId', i));
-					const pageReferenceUid = getLocatorValue(this.getNodeParameter('pageReferenceUid', i));
-					url = `${baseUrl}/v1/projects/${id}/page-references/${pageReferenceUid}`;
-					method = 'GET';
-					break;
-				}
-				case 'listSectionTemplates': {
-					const id = getLocatorValue(this.getNodeParameter('projectId', i));
-					url = `${baseUrl}/v1/projects/${id}/templates/section-templates`;
-					method = 'GET';
-					break;
-				}
-				case 'createSectionTemplate': {
-					const id = getLocatorValue(this.getNodeParameter('projectId', i));
-					const typed = {
-						uid: this.getNodeParameter('uid', i, '') as string,
-						name: this.getNodeParameter('name', i, '') as string,
-						description: this.getNodeParameter('description', i, '') as string,
-					};
-					const additional = this.getNodeParameter('additionalProperties', i, '{}') as string;
-					url = `${baseUrl}/v1/projects/${id}/templates/section-templates`;
-					body = buildRequestBody(typed, additional);
-					method = 'POST';
-					break;
-				}
-				case 'listPageTemplates': {
-					const id = getLocatorValue(this.getNodeParameter('projectId', i));
-					url = `${baseUrl}/v1/projects/${id}/templates/page-templates`;
-					method = 'GET';
-					break;
-				}
-				case 'createPageTemplate': {
-					const id = getLocatorValue(this.getNodeParameter('projectId', i));
-					const bodiesParam = this.getNodeParameter('bodies', i, {}) as {
-						body?: Array<{ name: string; description?: string }>;
-					};
-					const bodies = (bodiesParam.body ?? []).map((b) => ({
-						name: b.name,
-						description: b.description ?? null,
-					}));
-					const typed = {
-						uid: this.getNodeParameter('uid', i, '') as string,
-						name: this.getNodeParameter('name', i, '') as string,
-						description: this.getNodeParameter('description', i, '') as string,
-						bodies: bodies.length > 0 ? bodies : undefined,
-					};
-					const additional = this.getNodeParameter('additionalProperties', i, '{}') as string;
-					url = `${baseUrl}/v1/projects/${id}/templates/page-templates`;
-					body = buildRequestBody(typed as IDataObject, additional);
-					method = 'POST';
-					break;
-				}
-				case 'addSectionToBody': {
-					const id = getLocatorValue(this.getNodeParameter('projectId', i));
-					const pageUid = getLocatorValue(this.getNodeParameter('pageUid', i));
-					const bodyName = getLocatorValue(this.getNodeParameter('bodyName', i));
-					const sectionName = getLocatorValue(this.getNodeParameter('sectionName', i));
-					const templateUid = getLocatorValue(this.getNodeParameter('sectionTemplateUid', i));
-					url = `${baseUrl}/v1/projects/${id}/pages/${pageUid}/bodies/${bodyName}/sections/${sectionName}`;
-					body = { templateUid };
-					method = 'PUT';
-					break;
-				}
-				case 'executeActionsOnPage': {
-					const id = getLocatorValue(this.getNodeParameter('projectId', i));
-					const pageUid = getLocatorValue(this.getNodeParameter('pageUid', i));
-					const action = this.getNodeParameter('action', i, 'copy') as string;
-					const releaseOptions =
-						action === 'release'
-							? (this.getNodeParameter('releaseOptions', i, {}) as IDataObject)
-							: undefined;
-					url = `${baseUrl}/v1/projects/${id}/pages/${pageUid}/actions`;
-					body =
-						action === 'release' && releaseOptions && Object.keys(releaseOptions).length > 0
-							? { action, options: releaseOptions }
-							: { action };
-					method = 'POST';
-					break;
-				}
-				case 'listPages': {
-					const id = getLocatorValue(this.getNodeParameter('projectId', i));
-					url = `${baseUrl}/v1/projects/${id}/pages/`;
-					method = 'GET';
-					break;
-				}
-				case 'createPage': {
-					const id = getLocatorValue(this.getNodeParameter('projectId', i));
-					const typed = {
-						uid: this.getNodeParameter('uid', i, '') as string,
-						templateUid: getLocatorValue(this.getNodeParameter('templateUid', i)),
-					};
-					const additional = this.getNodeParameter('additionalProperties', i, '{}') as string;
-					url = `${baseUrl}/v1/projects/${id}/pages`;
-					body = buildRequestBody(typed, additional);
-					method = 'POST';
-					break;
-				}
-				case 'getInputElementOfForm': {
-					const id = getLocatorValue(this.getNodeParameter('projectId', i));
-					const pageUid = getLocatorValue(this.getNodeParameter('pageUid', i));
-					const editorName = this.getNodeParameter('editorName', i) as string;
-					url = `${baseUrl}/v1/projects/${id}/pages/${pageUid}/form/${editorName}`;
-					method = 'GET';
-					break;
-				}
-				case 'updateInputElementOfForm': {
-					const id = getLocatorValue(this.getNodeParameter('projectId', i));
-					const pageUid = getLocatorValue(this.getNodeParameter('pageUid', i));
-					const editorName = this.getNodeParameter('inputElementName', i, '') as string;
-					const language = this.getNodeParameter('language', i, '') as string;
-					const typed = {
-						name: editorName,
-						type: this.getNodeParameter('inputElementType', i, '') as string,
-						language: language === '' ? null : language,
-						description: this.getNodeParameter('inputElementDescription', i, '') as string,
-						configuration: JSON.parse(
-							this.getNodeParameter('inputElementConfiguration', i, '{}') as string,
-						),
-						content: JSON.parse(this.getNodeParameter('inputElementContent', i, '""') as string),
-					};
-					url = `${baseUrl}/v1/projects/${id}/pages/${pageUid}/form/${editorName}${
-						language ? `/${language}` : ''
-					}`;
-					body = typed as IDataObject;
-					method = 'PATCH';
-					break;
-				}
-				case 'getInputElementOfSectionForm': {
-					const id = getLocatorValue(this.getNodeParameter('projectId', i));
-					const pageUid = getLocatorValue(this.getNodeParameter('pageUid', i));
-					const bodyName = getLocatorValue(this.getNodeParameter('bodyName', i));
-					const sectionName = getLocatorValue(this.getNodeParameter('sectionName', i));
-					const editorName = this.getNodeParameter('editorName', i) as string;
-					url = `${baseUrl}/v1/projects/${id}/pages/${pageUid}/bodies/${bodyName}/sections/${sectionName}/form/${editorName}`;
-					method = 'GET';
-					break;
-				}
-				case 'updateInputElementOfSectionForm': {
-					const id = getLocatorValue(this.getNodeParameter('projectId', i));
-					const pageUid = getLocatorValue(this.getNodeParameter('pageUid', i));
-					const bodyName = getLocatorValue(this.getNodeParameter('bodyName', i));
-					const sectionName = getLocatorValue(this.getNodeParameter('sectionName', i));
-					const editorName = this.getNodeParameter('inputElementName', i, '') as string;
-					const language = this.getNodeParameter('language', i, '') as string;
-					const typed = {
-						name: editorName,
-						type: this.getNodeParameter('inputElementType', i, '') as string,
-						language: language === '' ? null : language,
-						description: this.getNodeParameter('inputElementDescription', i, '') as string,
-						configuration: JSON.parse(
-							this.getNodeParameter('inputElementConfiguration', i, '{}') as string,
-						),
-						content: JSON.parse(this.getNodeParameter('inputElementContent', i, '""') as string),
-					};
-					url = `${baseUrl}/v1/projects/${id}/pages/${pageUid}/bodies/${bodyName}/sections/${sectionName}/form/${editorName}${
-						language ? `/${language}` : ''
-					}`;
-					body = typed as IDataObject;
-					method = 'PATCH';
-					break;
-				}
-				case 'getPage': {
-					const id = getLocatorValue(this.getNodeParameter('projectId', i));
-					const pageUid = getLocatorValue(this.getNodeParameter('pageUid', i));
-					url = `${baseUrl}/v1/projects/${id}/pages/${pageUid}`;
-					method = 'GET';
-					break;
-				}
-				case 'getInputElementsOfFormFromPage': {
-					const id = getLocatorValue(this.getNodeParameter('projectId', i));
-					const pageUid = getLocatorValue(this.getNodeParameter('pageUid', i));
-					url = `${baseUrl}/v1/projects/${id}/pages/${pageUid}/form`;
-					method = 'GET';
-					break;
-				}
-				case 'getBodiesOfPage': {
-					const id = getLocatorValue(this.getNodeParameter('projectId', i));
-					const pageUid = getLocatorValue(this.getNodeParameter('pageUid', i));
-					url = `${baseUrl}/v1/projects/${id}/pages/${pageUid}/bodies`;
-					method = 'GET';
-					break;
-				}
-				case 'getBodyOfPageByName': {
-					const id = getLocatorValue(this.getNodeParameter('projectId', i));
-					const pageUid = getLocatorValue(this.getNodeParameter('pageUid', i));
-					const bodyName = getLocatorValue(this.getNodeParameter('bodyName', i));
-					url = `${baseUrl}/v1/projects/${id}/pages/${pageUid}/bodies/${bodyName}`;
-					method = 'GET';
-					break;
-				}
-				case 'getInputElementsOfSectionFormFromPage': {
-					const id = getLocatorValue(this.getNodeParameter('projectId', i));
-					const pageUid = getLocatorValue(this.getNodeParameter('pageUid', i));
-					const bodyName = getLocatorValue(this.getNodeParameter('bodyName', i));
-					const sectionName = getLocatorValue(this.getNodeParameter('sectionName', i));
-					url = `${baseUrl}/v1/projects/${id}/pages/${pageUid}/bodies/${bodyName}/sections/${sectionName}/form`;
-					method = 'GET';
-					break;
-				}
-				case 'listScripts': {
-					const id = getLocatorValue(this.getNodeParameter('projectId', i));
-					url = `${baseUrl}/v1/projects/${id}/scripts/`;
-					method = 'GET';
-					break;
-				}
-				case 'executeScript': {
-					const id = getLocatorValue(this.getNodeParameter('projectId', i));
-					const scriptName = getLocatorValue(this.getNodeParameter('scriptName', i));
-					const params = this.getNodeParameter('scriptParameters', i, '{}') as string;
-					url = `${baseUrl}/v1/projects/${id}/scripts/${scriptName}/execute`;
-					body = buildRequestBody({}, params);
-					method = 'POST';
-					headers.Accept = 'text/plain';
-					break;
-				}
-				case 'listProjects': {
-					url = `${baseUrl}/v1/projects/`;
-					method = 'GET';
-					break;
-				}
-				case 'getProject': {
-					const id = getLocatorValue(this.getNodeParameter('projectId', i));
-					url = `${baseUrl}/v1/projects/${id}`;
-					method = 'GET';
-					break;
-				}
-				default:
-					throw new NodeOperationError(this.getNode(), `Unsupported operation: ${operation}`);
-			}
 
-			const response = await this.helpers.httpRequest({
-				method,
-				url,
-				headers: {
-					Authorization: 'Basic ' + Buffer.from(`${username}:${password}`).toString('base64'),
-					'Content-Type': headers['Content-Type'] ?? 'application/json',
-					Accept: headers.Accept ?? (isBinaryEndpoint ? '*/*' : 'application/json'),
-				},
-				body,
-				json:
-					!isBinaryEndpoint &&
-					!Buffer.isBuffer(body) &&
-					String(headers.Accept ?? 'application/json')
-						.toLowerCase()
-						.includes('json'),
-				encoding: isBinaryEndpoint ? 'arraybuffer' : undefined,
-				returnFullResponse: isBinaryEndpoint ? true : undefined,
-			});
+				const response = await this.helpers.httpRequest({
+					method,
+					url,
+					headers: {
+						Authorization: 'Basic ' + Buffer.from(`${username}:${password}`).toString('base64'),
+						'Content-Type': headers['Content-Type'] ?? 'application/json',
+						Accept: headers.Accept ?? (isBinaryEndpoint ? '*/*' : 'application/json'),
+					},
+					body,
+					json:
+						!isBinaryEndpoint &&
+						!Buffer.isBuffer(body) &&
+						String(headers.Accept ?? 'application/json')
+							.toLowerCase()
+							.includes('json'),
+					encoding: isBinaryEndpoint ? 'arraybuffer' : undefined,
+					returnFullResponse: isBinaryEndpoint ? true : undefined,
+				});
 
-			if (isBinaryEndpoint) {
-				const fileName =
-					response.headers['content-disposition']?.split('filename=')[1]?.replace(/"/g, '') ||
-					'file';
-				items[i].binary = {
-					data: await this.helpers.prepareBinaryData(response.body, fileName),
-				};
-			} else {
-				items[i].json = response;
+				if (isBinaryEndpoint) {
+					const fileName =
+						response.headers['content-disposition']?.split('filename=')[1]?.replace(/"/g, '') ||
+						'file';
+					const binaryData = await this.helpers.prepareBinaryData(response.body, fileName);
+					returnData.push({
+						json: { fileName: binaryData.fileName, mimeType: binaryData.mimeType },
+						binary: { data: binaryData },
+						pairedItem: { item: i },
+					});
+				} else {
+					pushResponse(returnData, response, i);
+				}
+			} catch (error) {
+				if (this.continueOnFail()) {
+					returnData.push({
+						json: { error: error instanceof Error ? error.message : String(error) },
+						pairedItem: { item: i },
+					});
+					continue;
+				}
+				throw error;
 			}
 		}
-		return [items];
+
+		return [returnData];
 	}
 }

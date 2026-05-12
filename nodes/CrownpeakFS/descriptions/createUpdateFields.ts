@@ -183,6 +183,7 @@ export const executeActionsOnPageFields: INodeProperties[] = [
 		type: 'options',
 		required: true,
 		default: 'copy',
+		description: 'Whether to duplicate the page (copy) or publish it to the live state (release)',
 		options: pageReferenceActionOptions,
 	},
 	{
