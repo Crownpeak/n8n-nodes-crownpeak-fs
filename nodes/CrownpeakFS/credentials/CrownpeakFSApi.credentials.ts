@@ -3,7 +3,7 @@ import { ICredentialType, INodeProperties } from 'n8n-workflow';
 export class CrownpeakFSApi implements ICredentialType {
 	name = 'crownpeakFSApi';
 	displayName = 'FirstSpirit REST API';
-	documentationUrl = '';
+	documentationUrl = 'https://github.com/Crownpeak/n8n-nodes-crownpeak-fs#credentials';
 	properties: INodeProperties[] = [
 		{
 			displayName: 'Username',

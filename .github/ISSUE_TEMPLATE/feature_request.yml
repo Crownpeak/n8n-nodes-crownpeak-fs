@@ -1,0 +1,24 @@
+name: Feature request
+description: Suggest an improvement for the FirstSpirit REST API n8n node
+title: "[Feature]: "
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: use-case
+    attributes:
+      label: Use case
+      description: Describe the workflow this feature should support.
+    validations:
+      required: true
+  - type: textarea
+    id: proposed-behavior
+    attributes:
+      label: Proposed behavior
+      description: Describe the desired n8n user experience.
+    validations:
+      required: true
+  - type: textarea
+    id: api-reference
+    attributes:
+      label: FirstSpirit REST API reference
+      description: Link or describe the API endpoint if known.

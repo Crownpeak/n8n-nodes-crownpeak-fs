@@ -1,175 +1,153 @@
-<a href="http://www.crownpeak.com" target="_blank">
-  <img src="./images/logo/crownpeak-logo.png" alt="Crownpeak Logo" title="Crownpeak Logo" />
-</a>
-
 # n8n-nodes-crownpeak-fs
 
-## Overview
+FirstSpirit REST API nodes for n8n.
 
-This repository provides a custom n8n integration node for the FirstSpirit REST API. It enables direct access to FirstSpirit operations such as media, page reference, template, page and script configuration within a n8n workflow.
+This package provides a community node for automating Crownpeak FirstSpirit REST API workflows in n8n. It supports project discovery, search, media operations, page references, templates, pages, scripts, and page form data.
 
-## What is it?
+> Important: The FirstSpirit REST module described here is a prototype and is under active development. APIs and compatibility can change. Do not use this package in production environments without validating it against your FirstSpirit version and workflow requirements.
 
-A n8n node module designed to simplify integration with Crownpeak FirstSpirit REST API using basic auth credential management. It supports:
+## What You Can Do
 
-- Authentication using username/password
-- Manage media
-- Manage pages and page references
-- Manage templates and scripts
-- Chain operations using dynamic expressions for automated content data pipelines
+- List and get FirstSpirit projects.
+- Search content in a project.
+- Work with media, pages, page references, templates, scripts, and page form data.
+- Upload and download media data.
+- Chain FirstSpirit operations in n8n workflows.
 
-## What is it for?
+## Installation
 
-This module is useful for organizations looking to build automated content pipelines into the FirstSpirit ecosystem.
-
----
-
-## Supported Resources & Operations
-
-| Resource       | Operations Supported            |
-|----------------|---------------------------------|
-| Media          | Get, Create, Upload             |
-| Search         | Search                          |
-| Page Reference | List, Create, Get               |
-| Template       | List, Create                    |
-| Page           | Add, Execute, Get, Create, List |
-| Script         | List, Execute                   |
-| Project        | List, Get                       |
-
-| Feature                                        | Method | Endpoint                                                                                            | Description                                                      |
-|------------------------------------------------|--------|-----------------------------------------------------------------------------------------------------|------------------------------------------------------------------|
-| Get Binary Data                                | GET    | /v1/projects/{projectId}/media/{mediumUid}/data                                                     | Get binary data of a medium                                      |
-| Upload Binary Data                             | PUT    | /v1/projects/{projectId}/media/{mediumUid}/data                                                     | Upload binary data to a medium                                   |
-| Create Medium                                  | POST   | /v1/projects/{projectId}/media                                                                      | Create a new medium                                              |
-| Get Medium                                     | GET    | /v1/projects/{projectId}/media/{mediumUid}                                                          | Get a medium by uid                                              |
-| Search in Project                              | GET    | /v1/projects/{projectId}/search                                                                     | Search in FirstSpirit project                                    |
-| List Page References                           | GET    | /v1/projects/{projectId}/page-references/                                                           | List all page references in a FirstSpirit project                |
-| Create Page Reference                          | POST   | /v1/projects/{projectId}/page-references/                                                           | Create a new page reference for a page                           |
-| Get Page Reference                             | GET    | /v1/projects/{projectId}/page-references/{pageReferenceUid}                                         | Get a page reference by uid                                      |
-| List Section Templates                         | GET    | /v1/projects/{projectId}/templates/section-templates                                                | List all section templates in a FirstSpirit project              |
-| Create Section Template                        | POST   | /v1/projects/{projectId}/templates/section-templates                                                | Create a new section template                                    |
-| List Page Templates                            | GET    | /v1/projects/{projectId}/templates/page-templates                                                   | List all page templates in a FirstSpirit project                 |
-| Create Page Template                           | POST   | /v1/projects/{projectId}/templates/page-templates                                                   | Create a new page template                                       |
-| Add Section                                    | PUT    | /v1/projects/{projectId}/pages/{pageUid}/bodies/{bodyName}/sections/{sectionName}                   | Add a new section to a body                                      |
-| Execute Actions                                | POST   | /v1/projects/{projectId}/pages/{pageUid}/actions                                                    | Execute actions on a FirstSpirit page                            |
-| List Pages                                     | GET    | /v1/projects/{projectId}/pages/                                                                     | List all pages in a FirstSpirit project                          |
-| Create Page                                    | POST   | /v1/projects/{projectId}/pages/                                                                     | Create a new page                                                |
-| Get Input Element of Form                      | GET    | /v1/projects/{projectId}/pages/{pageUid}/form/{editorName}                                          | Get input element of a form and its contents                     |
-| Update Input Element of Form                   | PATCH  | /v1/projects/{projectId}/pages/{pageUid}/form/{editorName}                                          | Update content of input element of a form                        |
-| Get Input Element of Section Form              | GET    | /v1/projects/{projectId}/pages/{pageUid}/bodies/{bodyName}/sections/{sectionName}/form/{editorName} | Get input element of a section form and its contents             |
-| Update Input Element of Section Form           | PATCH  | /v1/projects/{projectId}/pages/{pageUid}/bodies/{bodyName}/sections/{sectionName}/form/{editorName} | Update content of input element of a section form                |
-| Get Page                                       | GET    | /v1/projects/{projectId}/pages/{pageUid}                                                            | Get a page by uid                                                |
-| Get Input Element of Form for Page             | GET    | /v1/projects/{projectId}/pages/{pageUid}/form                                                       | Get input element of a form for a FirstSpirit page               |
-| Get Bodies                                     | GET    | /v1/projects/{projectId}/pages/{pageUid}/bodies                                                     | Get bodies of a FirstSpirit page                                 |
-| Get Body                                       | GET    | /v1/projects/{projectId}/pages/{pageUid}/bodies/{bodyName}                                          | Get body of a FirstSpirit page by name                           |
-| Get Input Elements of Form for Section of Page | GET    | /v1/projects/{projectId}/pages/{pageUid}/bodies/{bodyName}/sections/{sectionName}/form              | Get input elements of a form for a section of a FirstSpirit page |
-| Execute Script                                 | POST   | /v1/projects/{projectId}/scripts/{scriptName}/execute                                               | Execute script in a FirstSpirit project                          |
-| List Scripts                                   | GET    | /v1/projects/{projectId}/scripts/                                                                   | List all scripts in a FirstSpirit project                        |
-| List Projects                                  | GET    | /v1/projects/                                                                                       | List all projects on FirstSpirit server                          |
-| Get project                                    | GET    | /v1/projects/{id}                                                                                   | Get FirstSpirit project by id                                    |
-
-Each method supports query parameterization using dynamic expressions and authenticates using Basic Auth.
-
-## Prerequisites
-
-Before using this n8n community node, ensure the following components are available:
-
-- **FirstSpirit**: 2025.7 or higher
-- **Application Server**: Standalone Apache Tomcat
-- **Module**: FirstSpirit-REST-0.0.1.fsm
-
-Download the module from the [Crownpeak download portal](https://file.crownpeak.com/) under `custom-download/Modules/REST`.
-If you do not have access, please contact [support@crownpeak.com](mailto:support@crownpeak.com).
-
-Please refer to the README.md file for detailed setup and configuration steps.
-
-> ⚠️ **Important Notice**
->
-> The FirstSpirit REST module is a **prototype** and currently **under active development**.
->
-> Functionality, APIs, and compatibility are subject to change without notice.
-> **Do not use in production environments**.
-
-> ℹ️ To enable communication, the FirstSpirit server must be made accessible to n8n, for example by using a tunneling tool such as ngrok.
-
-## Installation & Usage
-
-### As a Private Node
-
-1. Clone this repository to your local machine:
-   ```sh
-   git clone https://github.com/Crownpeak/n8n-nodes-crownpeak-fs.git
-   ```
-2. Build the node module:
-   ```sh
-   cd n8n-nodes-crownpeak-fs
-   npm install
-   npm run build
-   ```
-3. Create a custom directory for files to use in the media endpoints. Mount it as a volume and start the n8n Docker container:
-   ```sh
-	 docker run -it --rm \
-    --name n8n \
-    -p 5678:5678 \
-    -v n8n_data:/home/node/.n8n \
-    -v ~/n8n_files:/home/node/n8n_files \
-    docker.n8n.io/n8nio/n8n
-	 ```
-4. Copy the `dist/` folder to your n8n instance's custom nodes' directory:
-   ```sh
-   docker cp ./dist n8n:/home/node/.n8n/custom/nodes/crownpeak-fs
-   ```
-5. Restart your n8n Docker container:
-   ```sh
-   docker restart n8n
-   ```
-6. Log in to n8n and the node will appear as FirstSpirit REST API.
-
-> ℹ️ If it doesn't appear, ensure you are mounting or copying to the correct container path and that `NODE_FUNCTION_ALLOW_EXTERNAL` is not overly restricted.
-
-### As a Community Node (once approved)
-
-Once this node is approved and published on the official [n8n integrations registry](https://n8n.io/integrations), installation will be as simple as:
+For local development and testing, clone the repository and build the package:
 
 ```sh
-n8n install n8n-nodes-crownpeak-fs
+git clone https://github.com/Crownpeak/n8n-nodes-crownpeak-fs.git
+cd n8n-nodes-crownpeak-fs
+npm ci
+npm run build
 ```
 
-And in `n8n@1.100.0+` via the UI:
+To run it in a local n8n instance:
 
-1. Open Settings → Community Nodes
-2. Click Install a Community Node
-3. Search or paste: `n8n-nodes-crownpeak-fs`
-4. Click Install
+```sh
+npm link
+mkdir -p ~/.n8n/custom
+cd ~/.n8n/custom
+npm init -y
+npm link n8n-nodes-crownpeak-fs
+npx n8n
+```
 
----
-
-## 📸 Screenshots
-
-1. A basic workflow example using n8n Crownpeak FS Node
-   ![A basic workflow example using n8n Crownpeak FS Node](./images/screenshots/basic-workflow-example-1.png 'A basic workflow example using n8n Crownpeak FS Node')
-
-2. The result of `Create Page Template` request
-   ![The result of `Create Page Template` request](./images/screenshots/basic-workflow-example-2.png 'The result of `Create Page Template request`')
-
----
+Open `http://localhost:5678` and search for `FirstSpirit REST API`.
 
 ## Credentials
 
-This node supports authentication against the Crownpeak FirstSpirit REST API. You’ll need the following credentials:
+Create FirstSpirit REST API credentials in n8n with:
 
-- Username and Password
-- Base URL of the FirstSpirit REST API
+- **Username**: FirstSpirit user name for basic authentication
+- **Password**: FirstSpirit password
+- **Base URL**: Base URL of the FirstSpirit REST API, for example `https://firstspirit.example.com`
 
----
+The FirstSpirit server must be reachable from the n8n process. For local testing, this can require VPN access, network routing, or a tunnel depending on your environment.
+
+## Migration: Typed Body Fields
+
+Earlier versions exposed a single `Content` JSON field on the Create, Update, Add, and Execute operations. That field is now replaced with typed inputs (UID, Filename, Template UID, etc.). An optional `Additional Properties` JSON field is available on most Create operations as a forward-compatible escape hatch — keys defined as typed fields always win on collision.
+
+To migrate a workflow built against an older version:
+
+1. Open the workflow node.
+2. Copy the values from the old `Content` JSON into the new typed fields.
+3. Place any remaining keys into `Additional Properties`.
+
+### Output Shape
+
+List, search, and "get many" operations now emit one n8n item per element instead of a single item carrying an array. Workflows that previously read `$json.items[0]` or `$json[0]` from the response should switch to per-item expressions (`$json.uid`, `$json.displayName`, etc.). Empty list responses produce zero output items. Every output item carries a `pairedItem` link back to the originating input.
+
+## Resource Selection
+
+Where the FirstSpirit REST API exposes list or search endpoints, the node lets you select resources from n8n resource locators. Each locator keeps a manual ID or name mode for expressions and advanced workflows.
+
+## Media Uploads
+
+Media uploads use n8n binary input data. Provide an incoming binary property, then set `Binary Property` to that property name. Local file path uploads are not supported because verified community nodes must not read files from the n8n host filesystem.
+
+## Prerequisites
+
+- FirstSpirit 2025.7 or higher
+- Standalone Apache Tomcat application server
+- FirstSpirit REST module
+- Network access from n8n to the FirstSpirit REST endpoint
+
+The FirstSpirit REST module may require access to the Crownpeak download portal. Contact Crownpeak support or your Customer Success Manager if you do not have access.
+
+## Supported Resources and Operations
+
+| Resource | Operations |
+| --- | --- |
+| Project | List, Get |
+| Search | Search |
+| Media | Get, Create, Upload Binary Data, Get Binary Data |
+| Page Reference | List, Create, Get |
+| Template | List Section Templates, Create Section Template, List Page Templates, Create Page Template |
+| Page | List, Create, Get, Add Section, Execute Actions, Get/Update Form Inputs, Get Bodies |
+| Script | List, Execute |
+
+## Endpoint Coverage
+
+| Feature | Method | Endpoint |
+| --- | --- | --- |
+| List Projects | `GET` | `/v1/projects/` |
+| Get Project | `GET` | `/v1/projects/{id}` |
+| Search in Project | `GET` | `/v1/projects/{projectId}/search` |
+| Create Medium | `POST` | `/v1/projects/{projectId}/media` |
+| Get Medium | `GET` | `/v1/projects/{projectId}/media/{mediumUid}` |
+| Get Binary Data | `GET` | `/v1/projects/{projectId}/media/{mediumUid}/data` |
+| Upload Binary Data | `PUT` | `/v1/projects/{projectId}/media/{mediumUid}/data` |
+| List Page References | `GET` | `/v1/projects/{projectId}/page-references/` |
+| Create Page Reference | `POST` | `/v1/projects/{projectId}/page-references/` |
+| Get Page Reference | `GET` | `/v1/projects/{projectId}/page-references/{pageReferenceUid}` |
+| List Section Templates | `GET` | `/v1/projects/{projectId}/templates/section-templates` |
+| Create Section Template | `POST` | `/v1/projects/{projectId}/templates/section-templates` |
+| List Page Templates | `GET` | `/v1/projects/{projectId}/templates/page-templates` |
+| Create Page Template | `POST` | `/v1/projects/{projectId}/templates/page-templates` |
+| List Pages | `GET` | `/v1/projects/{projectId}/pages/` |
+| Create Page | `POST` | `/v1/projects/{projectId}/pages/` |
+| Get Page | `GET` | `/v1/projects/{projectId}/pages/{pageUid}` |
+| Add Section | `PUT` | `/v1/projects/{projectId}/pages/{pageUid}/bodies/{bodyName}/sections/{sectionName}` |
+| Execute Page Actions | `POST` | `/v1/projects/{projectId}/pages/{pageUid}/actions` |
+| Get Page Form Input | `GET` | `/v1/projects/{projectId}/pages/{pageUid}/form/{editorName}` |
+| Update Page Form Input | `PATCH` | `/v1/projects/{projectId}/pages/{pageUid}/form/{editorName}` |
+| Get Page Form Inputs | `GET` | `/v1/projects/{projectId}/pages/{pageUid}/form` |
+| Get Page Bodies | `GET` | `/v1/projects/{projectId}/pages/{pageUid}/bodies` |
+| Get Page Body | `GET` | `/v1/projects/{projectId}/pages/{pageUid}/bodies/{bodyName}` |
+| Get Section Form Input | `GET` | `/v1/projects/{projectId}/pages/{pageUid}/bodies/{bodyName}/sections/{sectionName}/form/{editorName}` |
+| Update Section Form Input | `PATCH` | `/v1/projects/{projectId}/pages/{pageUid}/bodies/{bodyName}/sections/{sectionName}/form/{editorName}` |
+| Get Section Form Inputs | `GET` | `/v1/projects/{projectId}/pages/{pageUid}/bodies/{bodyName}/sections/{sectionName}/form` |
+| List Scripts | `GET` | `/v1/projects/{projectId}/scripts/` |
+| Execute Script | `POST` | `/v1/projects/{projectId}/scripts/{scriptName}/execute` |
+
+## Local Development
+
+```sh
+npm ci
+npm run lint
+npm test
+npm run build
+```
+
+See [Development](./docs/development.md) for local n8n testing and troubleshooting.
+
+## Documentation
+
+- [Development](./docs/development.md)
+- [Community Verification Readiness](./docs/community-verification.md)
+- [AI Agent Guide](./docs/ai-agent-guide.md)
+- [Community Verification and Governance Design](./docs/superpowers/specs/2026-05-12-community-verification-governance-design.md)
+- [Node UX Feature Upgrade Design](./docs/superpowers/specs/2026-05-12-node-ux-feature-upgrade-design.md)
 
 ## Support
 
-- This repository is maintained by Crownpeak and released under the MIT License.
-- For Crownpeak platform questions, please contact your Customer Success Manager or [support@crownpeak.com](mailto:support@crownpeak.com).
-- For n8n integration issues or pull requests, use GitHub Issues or Discussions.
+For package issues, use GitHub Issues. For Crownpeak or FirstSpirit platform questions, contact your Customer Success Manager or Crownpeak support.
 
 ## License
 
-MIT © Crownpeak Technology, Inc.
-See [LICENSE](./LICENSE) for details.
+MIT
