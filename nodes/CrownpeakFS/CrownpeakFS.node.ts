@@ -21,6 +21,23 @@ import {
 import { getLocatorValue } from './helpers/resourceLocator';
 import { loadOptions } from './methods/loadOptions';
 
+function extractItems(response: unknown): IDataObject[] {
+	if (Array.isArray(response)) {
+		return response as IDataObject[];
+	}
+
+	if (response && typeof response === 'object') {
+		const responseObject = response as IDataObject;
+		for (const key of ['items', 'data', 'results']) {
+			if (Array.isArray(responseObject[key])) {
+				return responseObject[key] as IDataObject[];
+			}
+		}
+	}
+
+	return [];
+}
+
 export class CrownpeakFS implements INodeType {
 	methods = {
 		listSearch: loadOptions,
@@ -360,6 +377,9 @@ export class CrownpeakFS implements INodeType {
 						resource: ['search'],
 						operation: ['searchProject'],
 					},
+					hide: {
+						returnAll: [true],
+					},
 				},
 				description: 'The page of results to retrieve',
 			},
@@ -373,8 +393,41 @@ export class CrownpeakFS implements INodeType {
 						resource: ['search'],
 						operation: ['searchProject'],
 					},
+					hide: {
+						returnAll: [true],
+					},
 				},
 				description: 'The number of items to retrieve per page',
+			},
+			{
+				displayName: 'Return All',
+				name: 'returnAll',
+				type: 'boolean',
+				default: false,
+				displayOptions: {
+					show: {
+						resource: ['search'],
+						operation: ['searchProject'],
+					},
+				},
+				description: 'Whether to return all results or only up to a given limit',
+			},
+			{
+				displayName: 'Limit',
+				name: 'limit',
+				type: 'number',
+				default: 50,
+				typeOptions: {
+					minValue: 1,
+				},
+				displayOptions: {
+					show: {
+						resource: ['search'],
+						operation: ['searchProject'],
+						returnAll: [true],
+					},
+				},
+				description: 'Max number of results to return',
 			},
 			{
 				displayName: 'Editor Name',
@@ -504,6 +557,42 @@ export class CrownpeakFS implements INodeType {
 				case 'searchProject': {
 					const id = getLocatorValue(this.getNodeParameter('projectId', i));
 					const q = this.getNodeParameter('searchQuery', i) as string;
+					const returnAll = this.getNodeParameter('returnAll', i) as boolean;
+					if (returnAll) {
+						const limit = this.getNodeParameter('limit', i) as number;
+						const collected: IDataObject[] = [];
+						let page = 0;
+						const size = Math.min(limit, 100);
+
+						while (collected.length < limit) {
+							const searchParams = new URLSearchParams({
+								q,
+								page: String(page),
+								size: String(size),
+							});
+							const response = await this.helpers.httpRequest({
+								method: 'GET',
+								url: `${baseUrl}/v1/projects/${id}/search?${searchParams.toString()}`,
+								headers: {
+									Authorization:
+										'Basic ' + Buffer.from(`${username}:${password}`).toString('base64'),
+									Accept: 'application/json',
+								},
+								json: true,
+							});
+							const pageItems = extractItems(response);
+							collected.push(...pageItems);
+
+							if (pageItems.length < size) {
+								break;
+							}
+
+							page += 1;
+						}
+
+						items[i].json = { items: collected.slice(0, limit) };
+						continue;
+					}
 					const page = this.getNodeParameter('pageNumber', i) as string;
 					const size = this.getNodeParameter('pageSize', i) as string;
 					const searchParams = new URLSearchParams({ q, page, size });

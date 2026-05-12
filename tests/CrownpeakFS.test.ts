@@ -49,6 +49,30 @@ describe('CrownpeakFS Node', () => {
 		expect(property?.type).toBe('resourceLocator');
 	});
 
+	it('should provide descriptions for all visible user input fields', () => {
+		const fieldsWithoutDescriptions = node.description.properties
+			.filter((property) => !['resource', 'operation'].includes(property.name))
+			.filter((property) => property.type !== 'notice')
+			.filter((property) => !property.description || property.description.trim().length < 12)
+			.map((property) => property.name);
+
+		expect(fieldsWithoutDescriptions).toEqual([]);
+	});
+
+	it('should expose search pagination controls', () => {
+		const returnAll = node.description.properties.find((property) => property.name === 'returnAll');
+		const limit = node.description.properties.find((property) => property.name === 'limit');
+		const pageNumber = node.description.properties.find((property) => property.name === 'pageNumber');
+		const pageSize = node.description.properties.find((property) => property.name === 'pageSize');
+
+		expect(returnAll?.type).toBe('boolean');
+		expect(returnAll?.description).toBe('Whether to return all results or only up to a given limit');
+		expect(limit?.type).toBe('number');
+		expect(limit?.displayOptions?.show?.returnAll).toEqual([true]);
+		expect(pageNumber?.displayOptions?.hide?.returnAll).toEqual([true]);
+		expect(pageSize?.displayOptions?.hide?.returnAll).toEqual([true]);
+	});
+
 	it('should define all expected operations for each resource', () => {
 		function getOperationValues(resource: string) {
 			const opProp = node.description.properties.find(
