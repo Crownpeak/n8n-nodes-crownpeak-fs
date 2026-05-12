@@ -503,6 +503,61 @@ export const crownpeakFSOperations: INodeProperties[] = [
 				value: 'uninstallModule',
 				action: 'Uninstall a FirstSpirit module',
 			},
+			{
+				name: 'List Data Sources',
+				value: 'listDataSources',
+				action: 'List all data sources in a FirstSpirit project',
+			},
+			{
+				name: 'Create Data Source',
+				value: 'createDataSource',
+				action: 'Create a new data source in a FirstSpirit project',
+			},
+			{
+				name: 'Get Data Source',
+				value: 'getDataSource',
+				action: 'Get details of a specific data source',
+			},
+			{
+				name: 'Get All Datasets',
+				value: 'getAllDatasets',
+				action: 'Get all datasets of a data source',
+			},
+			{
+				name: 'Create Dataset',
+				value: 'createDataset',
+				action: 'Create a new dataset in a data source',
+			},
+			{
+				name: 'Get Dataset By GID',
+				value: 'getDatasetByGid',
+				action: 'Get a dataset by its GID',
+			},
+			{
+				name: 'Delete Dataset',
+				value: 'deleteDataset',
+				action: 'Delete a dataset from a data source',
+			},
+			{
+				name: 'Get Dataset Entity',
+				value: 'getDatasetEntity',
+				action: 'Get the entity of a dataset',
+			},
+			{
+				name: 'Update Dataset Entity',
+				value: 'updateDatasetEntity',
+				action: 'Update the entity of a dataset',
+			},
+			{
+				name: 'Get Dataset Revisions',
+				value: 'getDatasetRevisions',
+				action: 'Get all revisions of a dataset',
+			},
+			{
+				name: 'Get Dataset Revision By ID',
+				value: 'getDatasetRevisionById',
+				action: 'Get a single revision of a dataset by ID',
+			},
 		],
 		default: 'listProjects',
 	},

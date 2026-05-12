@@ -75,6 +75,10 @@ export class CrownpeakFS implements INodeType {
 						name: 'Module',
 						value: 'module',
 					},
+					{
+						name: 'Data Source',
+						value: 'dataSource',
+					},
 				],
 				default: 'project',
 			},
@@ -453,6 +457,75 @@ export class CrownpeakFS implements INodeType {
 				noDataExpression: true,
 				displayOptions: {
 					show: {
+						resource: ['dataSource'],
+					},
+				},
+				options: [
+					{
+						name: 'List Data Sources',
+						value: 'listDataSources',
+						action: 'List all data sources in a project',
+					},
+					{
+						name: 'Create Data Source',
+						value: 'createDataSource',
+						action: 'Create a new data source',
+					},
+					{
+						name: 'Get Data Source',
+						value: 'getDataSource',
+						action: 'Get data source details',
+					},
+					{
+						name: 'Get All Datasets',
+						value: 'getAllDatasets',
+						action: 'Get all datasets of a data source',
+					},
+					{
+						name: 'Create Dataset',
+						value: 'createDataset',
+						action: 'Create a new dataset',
+					},
+					{
+						name: 'Get Dataset By GID',
+						value: 'getDatasetByGid',
+						action: 'Get a dataset by its GID',
+					},
+					{
+						name: 'Delete Dataset',
+						value: 'deleteDataset',
+						action: 'Delete a dataset',
+					},
+					{
+						name: 'Get Dataset Entity',
+						value: 'getDatasetEntity',
+						action: 'Get the entity of a dataset',
+					},
+					{
+						name: 'Update Dataset Entity',
+						value: 'updateDatasetEntity',
+						action: 'Update the entity of a dataset',
+					},
+					{
+						name: 'Get Dataset Revisions',
+						value: 'getDatasetRevisions',
+						action: 'Get all revisions of a dataset',
+					},
+					{
+						name: 'Get Dataset Revision By ID',
+						value: 'getDatasetRevisionById',
+						action: 'Get a single revision of a dataset',
+					},
+				],
+				default: 'listDataSources',
+			},
+			{
+				displayName: 'Operation',
+				name: 'operation',
+				type: 'options',
+				noDataExpression: true,
+				displayOptions: {
+					show: {
 						resource: ['template'],
 					},
 				},
@@ -693,10 +766,10 @@ export class CrownpeakFS implements INodeType {
 				default: '',
 				displayOptions: {
 					show: {
-						resource: ['project', 'search', 'page', 'template', 'script', 'media', 'pageReference'],
+						resource: ['project', 'search', 'page', 'template', 'script', 'media', 'pageReference', 'dataSource'],
 					},
 					hide: {
-						operation: ['listProjects'],
+						operation: ['listProjects', 'listDataSources'],
 					},
 				},
 				placeholder: 'Enter the project ID',
@@ -1217,6 +1290,85 @@ export class CrownpeakFS implements INodeType {
 				},
 				placeholder: 'data',
 				description: 'Name of the binary property in the input item that contains the FSM file to install',
+			},
+			{
+				displayName: 'Datasource Name',
+				name: 'datasource',
+				type: 'string',
+				required: true,
+				default: '',
+				displayOptions: {
+					show: {
+						resource: ['dataSource'],
+						operation: [
+							'getDataSource',
+							'getAllDatasets',
+							'createDataset',
+							'getDatasetByGid',
+							'deleteDataset',
+							'getDatasetEntity',
+							'updateDatasetEntity',
+							'getDatasetRevisions',
+							'getDatasetRevisionById',
+						],
+					},
+				},
+				placeholder: 'Enter the datasource name',
+				description: 'The name/identifier of the data source',
+			},
+			{
+				displayName: 'Dataset GID',
+				name: 'datasetGid',
+				type: 'string',
+				required: true,
+				default: '',
+				displayOptions: {
+					show: {
+						resource: ['dataSource'],
+						operation: [
+							'getDatasetByGid',
+							'deleteDataset',
+							'getDatasetEntity',
+							'updateDatasetEntity',
+							'getDatasetRevisions',
+							'getDatasetRevisionById',
+						],
+					},
+				},
+				placeholder: 'Enter the dataset GID',
+				description: 'The global identifier (GID) of the dataset',
+			},
+			{
+				displayName: 'Dataset Revision ID',
+				name: 'datasetRevisionId',
+				type: 'string',
+				required: true,
+				default: '',
+				displayOptions: {
+					show: {
+						resource: ['dataSource'],
+						operation: ['getDatasetRevisionById'],
+					},
+				},
+				placeholder: 'Enter the revision ID',
+				description: 'The ID of the dataset revision to retrieve',
+			},
+			{
+				displayName: 'Content',
+				name: 'content',
+				type: 'json',
+				required: true,
+				default: `{}`,
+				typeOptions: {
+					alwaysOpenEditWindow: true,
+				},
+				displayOptions: {
+					show: {
+						resource: ['dataSource'],
+						operation: ['createDataSource', 'createDataset', 'updateDatasetEntity'],
+					},
+				},
+				description: 'Raw JSON for the request body',
 			},
 		],
 	};
@@ -2083,6 +2235,95 @@ export class CrownpeakFS implements INodeType {
 					url = `${baseUrl}/v1/modules/`;
 					body = formData;
 					method = 'POST';
+					break;
+				}
+
+				case 'listDataSources': {
+					const id = this.getNodeParameter('projectId', i) as string;
+					url = `${baseUrl}/v1/projects/${id}/data-sources/`;
+					method = 'GET';
+					break;
+				}
+				case 'createDataSource': {
+					const id = this.getNodeParameter('projectId', i) as string;
+					const content = this.getNodeParameter('content', i) as string;
+					url = `${baseUrl}/v1/projects/${id}/data-sources/`;
+					body = JSON.parse(content);
+					method = 'POST';
+					break;
+				}
+				case 'getDataSource': {
+					const id = this.getNodeParameter('projectId', i) as string;
+					const datasource = this.getNodeParameter('datasource', i) as string;
+					url = `${baseUrl}/v1/projects/${id}/data-sources/${encodeURIComponent(datasource)}`;
+					method = 'GET';
+					break;
+				}
+				case 'getAllDatasets': {
+					const id = this.getNodeParameter('projectId', i) as string;
+					const datasource = this.getNodeParameter('datasource', i) as string;
+					url = `${baseUrl}/v1/projects/${id}/data-sources/${encodeURIComponent(datasource)}/datasets/`;
+					method = 'GET';
+					break;
+				}
+				case 'createDataset': {
+					const id = this.getNodeParameter('projectId', i) as string;
+					const datasource = this.getNodeParameter('datasource', i) as string;
+					const content = this.getNodeParameter('content', i) as string;
+					url = `${baseUrl}/v1/projects/${id}/data-sources/${encodeURIComponent(datasource)}/datasets/`;
+					body = JSON.parse(content);
+					method = 'POST';
+					break;
+				}
+				case 'getDatasetByGid': {
+					const id = this.getNodeParameter('projectId', i) as string;
+					const datasource = this.getNodeParameter('datasource', i) as string;
+					const datasetGid = this.getNodeParameter('datasetGid', i) as string;
+					url = `${baseUrl}/v1/projects/${id}/data-sources/${encodeURIComponent(datasource)}/datasets/${encodeURIComponent(datasetGid)}`;
+					method = 'GET';
+					break;
+				}
+				case 'deleteDataset': {
+					const id = this.getNodeParameter('projectId', i) as string;
+					const datasource = this.getNodeParameter('datasource', i) as string;
+					const datasetGid = this.getNodeParameter('datasetGid', i) as string;
+					url = `${baseUrl}/v1/projects/${id}/data-sources/${encodeURIComponent(datasource)}/datasets/${encodeURIComponent(datasetGid)}`;
+					method = 'DELETE';
+					break;
+				}
+				case 'getDatasetEntity': {
+					const id = this.getNodeParameter('projectId', i) as string;
+					const datasource = this.getNodeParameter('datasource', i) as string;
+					const datasetGid = this.getNodeParameter('datasetGid', i) as string;
+					url = `${baseUrl}/v1/projects/${id}/data-sources/${encodeURIComponent(datasource)}/datasets/${encodeURIComponent(datasetGid)}/entity`;
+					method = 'GET';
+					break;
+				}
+				case 'updateDatasetEntity': {
+					const id = this.getNodeParameter('projectId', i) as string;
+					const datasource = this.getNodeParameter('datasource', i) as string;
+					const datasetGid = this.getNodeParameter('datasetGid', i) as string;
+					const content = this.getNodeParameter('content', i) as string;
+					url = `${baseUrl}/v1/projects/${id}/data-sources/${encodeURIComponent(datasource)}/datasets/${encodeURIComponent(datasetGid)}/entity`;
+					body = JSON.parse(content);
+					method = 'PATCH';
+					break;
+				}
+				case 'getDatasetRevisions': {
+					const id = this.getNodeParameter('projectId', i) as string;
+					const datasource = this.getNodeParameter('datasource', i) as string;
+					const datasetGid = this.getNodeParameter('datasetGid', i) as string;
+					url = `${baseUrl}/v1/projects/${id}/data-sources/${encodeURIComponent(datasource)}/datasets/${encodeURIComponent(datasetGid)}/revisions/`;
+					method = 'GET';
+					break;
+				}
+				case 'getDatasetRevisionById': {
+					const id = this.getNodeParameter('projectId', i) as string;
+					const datasource = this.getNodeParameter('datasource', i) as string;
+					const datasetGid = this.getNodeParameter('datasetGid', i) as string;
+					const datasetRevisionId = this.getNodeParameter('datasetRevisionId', i) as string;
+					url = `${baseUrl}/v1/projects/${id}/data-sources/${encodeURIComponent(datasource)}/datasets/${encodeURIComponent(datasetGid)}/revisions/${encodeURIComponent(datasetRevisionId)}`;
+					method = 'GET';
 					break;
 				}
 
