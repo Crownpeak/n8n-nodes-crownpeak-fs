@@ -83,6 +83,10 @@ export class CrownpeakFS implements INodeType {
 						name: 'Global Content',
 						value: 'globalContent',
 					},
+					{
+						name: 'Folder',
+						value: 'folder',
+					},
 				],
 				default: 'project',
 			},
@@ -413,9 +417,44 @@ export class CrownpeakFS implements INodeType {
 						action: 'List scripts',
 					},
 					{
+						name: 'Create Script',
+						value: 'createScript',
+						action: 'Create a new script',
+					},
+					{
+						name: 'Get Script',
+						value: 'getScript',
+						action: 'Get a specific script',
+					},
+					{
+						name: 'Delete Script',
+						value: 'deleteScript',
+						action: 'Delete a script',
+					},
+					{
 						name: 'Execute Script',
 						value: 'executeScript',
 						action: 'Execute script',
+					},
+					{
+						name: 'Get Script GOM',
+						value: 'getScriptGom',
+						action: 'Get script GOM definition',
+					},
+					{
+						name: 'Set Script GOM',
+						value: 'setScriptGom',
+						action: 'Set script GOM definition',
+					},
+					{
+						name: 'Get Script Channel Source',
+						value: 'getScriptChannelSource',
+						action: 'Get script code for a template set',
+					},
+					{
+						name: 'Set Script Channel Source',
+						value: 'setScriptChannelSource',
+						action: 'Set script code for a template set',
 					},
 				],
 				default: 'listScripts',
@@ -546,6 +585,50 @@ export class CrownpeakFS implements INodeType {
 					},
 				],
 				default: 'listGlobalContentElements',
+			},
+			{
+				displayName: 'Operation',
+				name: 'operation',
+				type: 'options',
+				noDataExpression: true,
+				displayOptions: {
+					show: {
+						resource: ['folder'],
+					},
+				},
+				options: [
+					{
+						name: 'Get Page Reference Folder',
+						value: 'getPageReferenceFolder',
+						action: 'Get a page reference folder by path',
+					},
+					{
+						name: 'Rename Page Reference Folder',
+						value: 'renamePageReferenceFolder',
+						action: 'Rename a page reference folder',
+					},
+					{
+						name: 'Get Page Folder',
+						value: 'getPageFolder',
+						action: 'Get a page folder by path',
+					},
+					{
+						name: 'Rename Page Folder',
+						value: 'renamePageFolder',
+						action: 'Rename a page folder',
+					},
+					{
+						name: 'Get Medium Folder',
+						value: 'getMediumFolder',
+						action: 'Get a medium folder by path',
+					},
+					{
+						name: 'Rename Medium Folder',
+						value: 'renameMediumFolder',
+						action: 'Rename a medium folder',
+					},
+				],
+				default: 'getPageReferenceFolder',
 			},
 			{
 				displayName: 'Operation',
@@ -794,7 +877,7 @@ export class CrownpeakFS implements INodeType {
 				default: '',
 				displayOptions: {
 					show: {
-						resource: ['project', 'search', 'page', 'template', 'script', 'media', 'pageReference', 'dataSource', 'globalContent'],
+						resource: ['project', 'search', 'page', 'template', 'script', 'media', 'pageReference', 'dataSource', 'globalContent', 'folder'],
 					},
 					hide: {
 						operation: ['listProjects', 'listDataSources'],
@@ -1002,11 +1085,19 @@ export class CrownpeakFS implements INodeType {
 				displayOptions: {
 					show: {
 						resource: ['script'],
-						operation: ['executeScript'],
+						operation: [
+							'getScript',
+							'deleteScript',
+							'executeScript',
+							'getScriptGom',
+							'setScriptGom',
+							'getScriptChannelSource',
+							'setScriptChannelSource',
+						],
 					},
 				},
 				placeholder: 'Enter the script name',
-				description: 'The name of the script to execute',
+				description: 'The name of the script',
 			},
 
 			{
@@ -1131,6 +1222,22 @@ export class CrownpeakFS implements INodeType {
 							'getFormatTemplateChannelSource',
 							'setFormatTemplateChannelSource',
 						],
+					},
+				},
+				placeholder: 'Enter the template set UID',
+				description: 'The UID of the template set (channel)',
+			},
+
+			{
+				displayName: 'Template Set UID',
+				name: 'templateSetUid',
+				type: 'string',
+				required: true,
+				default: '',
+				displayOptions: {
+					show: {
+						resource: ['script'],
+						operation: ['getScriptChannelSource', 'setScriptChannelSource'],
 					},
 				},
 				placeholder: 'Enter the template set UID',
@@ -1394,6 +1501,62 @@ export class CrownpeakFS implements INodeType {
 					show: {
 						resource: ['dataSource'],
 						operation: ['createDataSource', 'createDataset', 'updateDatasetEntity'],
+					},
+				},
+				description: 'Raw JSON for the request body',
+			},
+			{
+				displayName: 'Folder Path',
+				name: 'folderPath',
+				type: 'string',
+				required: true,
+				default: '',
+				displayOptions: {
+					show: {
+						resource: ['folder'],
+					},
+				},
+				placeholder: 'e.g. /root/subfolder',
+				description: 'The path of the folder (appended to the URL after the store prefix)',
+			},
+			{
+				displayName: 'Content',
+				name: 'content',
+				type: 'json',
+				required: true,
+				default: `{}`,
+				typeOptions: {
+					alwaysOpenEditWindow: true,
+				},
+				displayOptions: {
+					show: {
+						resource: ['folder'],
+						operation: [
+							'renamePageReferenceFolder',
+							'renamePageFolder',
+							'renameMediumFolder',
+						],
+					},
+				},
+				description: 'Raw JSON for the rename request body',
+			},
+			{
+				displayName: 'Content',
+				name: 'content',
+				type: 'json',
+				required: true,
+				default: `{}`,
+				typeOptions: {
+					alwaysOpenEditWindow: true,
+				},
+				displayOptions: {
+					show: {
+						resource: ['script'],
+						operation: [
+							'createScript',
+							'setScriptGom',
+							'setScriptChannelSource',
+						],
 					},
 				},
 				description: 'Raw JSON for the request body',
@@ -2365,6 +2528,111 @@ export class CrownpeakFS implements INodeType {
 					const id = this.getNodeParameter('projectId', i) as string;
 					url = `${baseUrl}/v1/projects/${id}/global-content/project-properties`;
 					method = 'GET';
+					break;
+				}
+
+				case 'createScript': {
+					const id = this.getNodeParameter('projectId', i) as string;
+					const content = this.getNodeParameter('content', i) as string;
+					url = `${baseUrl}/v1/projects/${id}/scripts/`;
+					body = JSON.parse(content);
+					method = 'POST';
+					break;
+				}
+				case 'getScript': {
+					const id = this.getNodeParameter('projectId', i) as string;
+					const scriptName = this.getNodeParameter('scriptName', i) as string;
+					url = `${baseUrl}/v1/projects/${id}/scripts/${encodeURIComponent(scriptName)}`;
+					method = 'GET';
+					break;
+				}
+				case 'deleteScript': {
+					const id = this.getNodeParameter('projectId', i) as string;
+					const scriptName = this.getNodeParameter('scriptName', i) as string;
+					url = `${baseUrl}/v1/projects/${id}/scripts/${encodeURIComponent(scriptName)}`;
+					method = 'DELETE';
+					break;
+				}
+				case 'getScriptGom': {
+					const id = this.getNodeParameter('projectId', i) as string;
+					const scriptName = this.getNodeParameter('scriptName', i) as string;
+					url = `${baseUrl}/v1/projects/${id}/scripts/${encodeURIComponent(scriptName)}/gom`;
+					method = 'GET';
+					break;
+				}
+				case 'setScriptGom': {
+					const id = this.getNodeParameter('projectId', i) as string;
+					const scriptName = this.getNodeParameter('scriptName', i) as string;
+					const content = this.getNodeParameter('content', i) as string;
+					url = `${baseUrl}/v1/projects/${id}/scripts/${encodeURIComponent(scriptName)}/gom`;
+					body = JSON.parse(content);
+					method = 'PUT';
+					break;
+				}
+				case 'getScriptChannelSource': {
+					const id = this.getNodeParameter('projectId', i) as string;
+					const scriptName = this.getNodeParameter('scriptName', i) as string;
+					const templateSetUid = this.getNodeParameter('templateSetUid', i) as string;
+					url = `${baseUrl}/v1/projects/${id}/scripts/${encodeURIComponent(scriptName)}/template-sets/${encodeURIComponent(templateSetUid)}`;
+					method = 'GET';
+					break;
+				}
+				case 'setScriptChannelSource': {
+					const id = this.getNodeParameter('projectId', i) as string;
+					const scriptName = this.getNodeParameter('scriptName', i) as string;
+					const templateSetUid = this.getNodeParameter('templateSetUid', i) as string;
+					const content = this.getNodeParameter('content', i) as string;
+					url = `${baseUrl}/v1/projects/${id}/scripts/${encodeURIComponent(scriptName)}/template-sets/${encodeURIComponent(templateSetUid)}`;
+					body = JSON.parse(content);
+					method = 'PUT';
+					break;
+				}
+				case 'getPageReferenceFolder': {
+					const id = this.getNodeParameter('projectId', i) as string;
+					const folderPath = this.getNodeParameter('folderPath', i) as string;
+					url = `${baseUrl}/v1/projects/${id}/page-reference-folders/${folderPath}`;
+					method = 'GET';
+					break;
+				}
+				case 'renamePageReferenceFolder': {
+					const id = this.getNodeParameter('projectId', i) as string;
+					const folderPath = this.getNodeParameter('folderPath', i) as string;
+					const content = this.getNodeParameter('content', i) as string;
+					url = `${baseUrl}/v1/projects/${id}/page-reference-folders/${folderPath}`;
+					body = JSON.parse(content);
+					method = 'PATCH';
+					break;
+				}
+				case 'getPageFolder': {
+					const id = this.getNodeParameter('projectId', i) as string;
+					const folderPath = this.getNodeParameter('folderPath', i) as string;
+					url = `${baseUrl}/v1/projects/${id}/page-folders/${folderPath}`;
+					method = 'GET';
+					break;
+				}
+				case 'renamePageFolder': {
+					const id = this.getNodeParameter('projectId', i) as string;
+					const folderPath = this.getNodeParameter('folderPath', i) as string;
+					const content = this.getNodeParameter('content', i) as string;
+					url = `${baseUrl}/v1/projects/${id}/page-folders/${folderPath}`;
+					body = JSON.parse(content);
+					method = 'PATCH';
+					break;
+				}
+				case 'getMediumFolder': {
+					const id = this.getNodeParameter('projectId', i) as string;
+					const folderPath = this.getNodeParameter('folderPath', i) as string;
+					url = `${baseUrl}/v1/projects/${id}/medium-folders/${folderPath}`;
+					method = 'GET';
+					break;
+				}
+				case 'renameMediumFolder': {
+					const id = this.getNodeParameter('projectId', i) as string;
+					const folderPath = this.getNodeParameter('folderPath', i) as string;
+					const content = this.getNodeParameter('content', i) as string;
+					url = `${baseUrl}/v1/projects/${id}/medium-folders/${folderPath}`;
+					body = JSON.parse(content);
+					method = 'PATCH';
 					break;
 				}
 

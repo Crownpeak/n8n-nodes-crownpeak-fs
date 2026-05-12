@@ -568,6 +568,71 @@ export const crownpeakFSOperations: INodeProperties[] = [
 				value: 'getProjectProperties',
 				action: 'Get project properties from global content',
 			},
+			{
+				name: 'Create Script',
+				value: 'createScript',
+				action: 'Create a new FirstSpirit script',
+			},
+			{
+				name: 'Get Script',
+				value: 'getScript',
+				action: 'Get a specific FirstSpirit script',
+			},
+			{
+				name: 'Delete Script',
+				value: 'deleteScript',
+				action: 'Delete a FirstSpirit script',
+			},
+			{
+				name: 'Get Script GOM',
+				value: 'getScriptGom',
+				action: 'Get the GOM definition of a FirstSpirit script',
+			},
+			{
+				name: 'Set Script GOM',
+				value: 'setScriptGom',
+				action: 'Set the GOM definition of a FirstSpirit script',
+			},
+			{
+				name: 'Get Script Channel Source',
+				value: 'getScriptChannelSource',
+				action: 'Get the script code for a specific template set',
+			},
+			{
+				name: 'Set Script Channel Source',
+				value: 'setScriptChannelSource',
+				action: 'Set the script code for a specific template set',
+			},
+			{
+				name: 'Get Page Reference Folder',
+				value: 'getPageReferenceFolder',
+				action: 'Get a page reference folder by path',
+			},
+			{
+				name: 'Rename Page Reference Folder',
+				value: 'renamePageReferenceFolder',
+				action: 'Rename a page reference folder',
+			},
+			{
+				name: 'Get Page Folder',
+				value: 'getPageFolder',
+				action: 'Get a page folder by path',
+			},
+			{
+				name: 'Rename Page Folder',
+				value: 'renamePageFolder',
+				action: 'Rename a page folder',
+			},
+			{
+				name: 'Get Medium Folder',
+				value: 'getMediumFolder',
+				action: 'Get a medium folder by path',
+			},
+			{
+				name: 'Rename Medium Folder',
+				value: 'renameMediumFolder',
+				action: 'Rename a medium folder',
+			},
 		],
 		default: 'listProjects',
 	},
