@@ -86,6 +86,20 @@ export const pageReferenceLocator = createResourceLocator({
 	},
 });
 
+export const pageReferenceLocatorForActions = createResourceLocator({
+	displayName: 'Page Reference',
+	name: 'pageReferenceUid',
+	description: 'Page reference whose action will be executed.',
+	searchListMethod: 'searchPageReferences',
+	placeholder: 'homepage',
+	displayOptions: {
+		show: {
+			resource: ['page'],
+			operation: ['executeActionsOnPage'],
+		},
+	},
+});
+
 export const mediumLocator = createResourceLocator({
 	displayName: 'Medium',
 	name: 'mediumUid',
@@ -113,7 +127,7 @@ export const pageLocator = createResourceLocator({
 			resource: ['page'],
 		},
 		hide: {
-			operation: ['listPages', 'createPage'],
+			operation: ['listPages', 'createPage', 'executeActionsOnPage'],
 		},
 	},
 });

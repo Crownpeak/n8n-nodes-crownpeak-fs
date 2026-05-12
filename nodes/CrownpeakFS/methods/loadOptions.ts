@@ -168,7 +168,7 @@ export const loadOptions = {
 		const response = await crownpeakApiRequest(
 			this,
 			'GET',
-			`/v1/projects/${projectId}/section-templates/`,
+			`/v1/projects/${projectId}/templates/section-templates/`,
 		);
 		const options = toNameValueOptions(asArray(response), ['name', 'displayName', 'uid', 'id'], [
 			'uid',
@@ -189,7 +189,7 @@ export const loadOptions = {
 		const response = await crownpeakApiRequest(
 			this,
 			'GET',
-			`/v1/projects/${projectId}/page-templates/`,
+			`/v1/projects/${projectId}/templates/page-templates/`,
 		);
 		const options = toNameValueOptions(asArray(response), ['name', 'displayName', 'uid', 'id'], [
 			'uid',

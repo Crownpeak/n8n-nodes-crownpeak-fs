@@ -15,6 +15,7 @@ import {
 	mediumLocator,
 	pageLocator,
 	pageReferenceLocator,
+	pageReferenceLocatorForActions,
 	projectLocator,
 	scriptLocator,
 	sectionLocator,
@@ -366,6 +367,7 @@ export class CrownpeakFS implements INodeType {
 			},
 			projectLocator,
 			pageReferenceLocator,
+			pageReferenceLocatorForActions,
 			mediumLocator,
 			{
 				displayName: 'Search Query',
@@ -703,13 +705,15 @@ export class CrownpeakFS implements INodeType {
 					}
 					case 'executeActionsOnPage': {
 						const id = getLocatorValue(this.getNodeParameter('projectId', i));
-						const pageUid = getLocatorValue(this.getNodeParameter('pageUid', i));
+						const pageReferenceUid = getLocatorValue(
+							this.getNodeParameter('pageReferenceUid', i),
+						);
 						const action = this.getNodeParameter('action', i, 'copy') as string;
 						const releaseOptions =
 							action === 'release'
 								? (this.getNodeParameter('releaseOptions', i, {}) as IDataObject)
 								: undefined;
-						url = `${baseUrl}/v1/projects/${id}/pages/${pageUid}/actions`;
+						url = `${baseUrl}/v1/projects/${id}/page-references/${pageReferenceUid}/actions`;
 						body =
 							action === 'release' && releaseOptions && Object.keys(releaseOptions).length > 0
 								? { action, options: releaseOptions }
