@@ -25,4 +25,16 @@ describe('verified-compatible runtime constraints', () => {
 	it('does not declare runtime dependencies', () => {
 		expect(packageMetadata.dependencies ?? {}).toEqual({});
 	});
+
+	it('does not contain the legacy descriptions/CrownpeakFS.node.options.ts file', () => {
+		const legacyOptionsPath = path.join(
+			__dirname,
+			'..',
+			'nodes',
+			'CrownpeakFS',
+			'descriptions',
+			'CrownpeakFS.node.options.ts',
+		);
+		expect(fs.existsSync(legacyOptionsPath)).toBe(false);
+	});
 });

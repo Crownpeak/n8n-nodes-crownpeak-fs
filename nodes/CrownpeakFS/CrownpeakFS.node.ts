@@ -118,22 +118,22 @@ export class CrownpeakFS implements INodeType {
 				},
 				options: [
 					{
-						name: 'Get Binary Data Of Medium',
+						name: 'Download Binary',
 						value: 'getBinaryDataOfMedium',
-						action: 'Get binary data of medium',
+						action: 'download binary',
 					},
 					{
-						name: 'Upload Binary Data To Medium',
+						name: 'Upload Binary',
 						value: 'uploadBinaryDataToMedium',
-						action: 'Upload binary data to medium',
+						action: 'upload binary',
 					},
 					{
-						name: 'Create Medium',
+						name: 'Create',
 						value: 'createMedium',
 						action: 'Create medium',
 					},
 					{
-						name: 'Get Medium',
+						name: 'Get',
 						value: 'getMedium',
 						action: 'Get medium',
 					},
@@ -152,12 +152,12 @@ export class CrownpeakFS implements INodeType {
 				},
 				options: [
 					{
-						name: 'List Projects',
+						name: 'Get Many',
 						value: 'listProjects',
 						action: 'List projects',
 					},
 					{
-						name: 'Get Project',
+						name: 'Get',
 						value: 'getProject',
 						action: 'Get project',
 					},
@@ -176,17 +176,17 @@ export class CrownpeakFS implements INodeType {
 				},
 				options: [
 					{
-						name: 'List Page References',
+						name: 'Get Many',
 						value: 'listPageReferences',
 						action: 'List page references',
 					},
 					{
-						name: 'Create Page Reference',
+						name: 'Create',
 						value: 'createPageReference',
 						action: 'Create page reference',
 					},
 					{
-						name: 'Get Page Reference By UID',
+						name: 'Get',
 						value: 'getPageReferenceByUid',
 						action: 'Get page reference by UID',
 					},
@@ -205,67 +205,67 @@ export class CrownpeakFS implements INodeType {
 				},
 				options: [
 					{
-						name: 'Add Section To Body',
+						name: 'Add Section to Body',
 						value: 'addSectionToBody',
 						action: 'Add section to body',
 					},
 					{
-						name: 'Execute Actions On Page',
+						name: 'Execute Action',
 						value: 'executeActionsOnPage',
 						action: 'Execute actions on page',
 					},
 					{
-						name: 'List Pages',
+						name: 'Get Many',
 						value: 'listPages',
 						action: 'List pages',
 					},
 					{
-						name: 'Create Page',
+						name: 'Create',
 						value: 'createPage',
 						action: 'Create page',
 					},
 					{
-						name: 'Get Input Element Of Form',
+						name: 'Get Page Input Element',
 						value: 'getInputElementOfForm',
 						action: 'Get input element of form',
 					},
 					{
-						name: 'Update Input Element Of Form',
+						name: 'Update Page Input Element',
 						value: 'updateInputElementOfForm',
 						action: 'Update input element of form',
 					},
 					{
-						name: 'Get Input Element Of Section Form',
+						name: 'Get Section Input Element',
 						value: 'getInputElementOfSectionForm',
 						action: 'Get input element of section form',
 					},
 					{
-						name: 'Update Input Element Of Section Form',
+						name: 'Update Section Input Element',
 						value: 'updateInputElementOfSectionForm',
 						action: 'Update input element of section form',
 					},
 					{
-						name: 'Get Page',
+						name: 'Get',
 						value: 'getPage',
 						action: 'Get page',
 					},
 					{
-						name: 'Get Input Elements Of Form From Page',
+						name: 'Get Page Form',
 						value: 'getInputElementsOfFormFromPage',
 						action: 'Get input elements of form from page',
 					},
 					{
-						name: 'Get Bodies Of Page',
+						name: 'Get Bodies',
 						value: 'getBodiesOfPage',
 						action: 'Get bodies of page',
 					},
 					{
-						name: 'Get Body Of Page By Name',
+						name: 'Get Body',
 						value: 'getBodyOfPageByName',
 						action: 'Get bodies of page by name',
 					},
 					{
-						name: 'Get Input Elements Of Section Form From Page',
+						name: 'Get Section Form',
 						value: 'getInputElementsOfSectionFormFromPage',
 						action: 'Get input elements of section form from page',
 					},
@@ -284,7 +284,7 @@ export class CrownpeakFS implements INodeType {
 				},
 				options: [
 					{
-						name: 'Search Project',
+						name: 'Search',
 						value: 'searchProject',
 						action: 'Search project',
 					},
@@ -303,12 +303,12 @@ export class CrownpeakFS implements INodeType {
 				},
 				options: [
 					{
-						name: 'List Scripts',
+						name: 'Get Many',
 						value: 'listScripts',
 						action: 'List scripts',
 					},
 					{
-						name: 'Execute Script',
+						name: 'Execute',
 						value: 'executeScript',
 						action: 'Execute script',
 					},
@@ -327,7 +327,7 @@ export class CrownpeakFS implements INodeType {
 				},
 				options: [
 					{
-						name: 'List Section Templates',
+						name: 'Get Many Section Templates',
 						value: 'listSectionTemplates',
 						action: 'List section templates',
 					},
@@ -337,7 +337,7 @@ export class CrownpeakFS implements INodeType {
 						action: 'Create section template',
 					},
 					{
-						name: 'List Page Templates',
+						name: 'Get Many Page Templates',
 						value: 'listPageTemplates',
 						action: 'List page templates',
 					},
