@@ -184,7 +184,6 @@ export const executeActionsOnPageFields: INodeProperties[] = [
 		required: true,
 		default: 'copy',
 		options: pageReferenceActionOptions,
-		description: 'The action to perform on the page reference',
 	},
 	{
 		displayName: 'Release Options',

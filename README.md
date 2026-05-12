@@ -48,6 +48,16 @@ Create FirstSpirit REST API credentials in n8n with:
 
 The FirstSpirit server must be reachable from the n8n process. For local testing, this can require VPN access, network routing, or a tunnel depending on your environment.
 
+## Migration: Typed Body Fields
+
+Earlier versions exposed a single `Content` JSON field on the Create, Update, Add, and Execute operations. That field is now replaced with typed inputs (UID, Filename, Template UID, etc.). An optional `Additional Properties` JSON field is available on most Create operations as a forward-compatible escape hatch — keys defined as typed fields always win on collision.
+
+To migrate a workflow built against an older version:
+
+1. Open the workflow node.
+2. Copy the values from the old `Content` JSON into the new typed fields.
+3. Place any remaining keys into `Additional Properties`.
+
 ## Resource Selection
 
 Where the FirstSpirit REST API exposes list or search endpoints, the node lets you select resources from n8n resource locators. Each locator keeps a manual ID or name mode for expressions and advanced workflows.

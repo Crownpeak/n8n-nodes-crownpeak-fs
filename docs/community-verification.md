@@ -33,3 +33,10 @@ The npm package owner must configure trusted publishing for this repository. A m
 
 - npm trusted publishing and n8n Creator Portal submission require maintainer-controlled external setup.
 - The FirstSpirit REST module is evolving, so API response assumptions must stay documented and tested.
+
+## Pre-Submission Verification
+
+Before submitting this node to the verified Community Nodes review:
+
+1. Run the manual UI checklist at [docs/smoke-tests.md](smoke-tests.md).
+2. Run the live-API validation runbook at [docs/live-api-validation.md](live-api-validation.md) against a real FirstSpirit REST server, and paste the findings table into the PR body.
