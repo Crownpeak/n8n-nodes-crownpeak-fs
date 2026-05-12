@@ -98,6 +98,56 @@ export const crownpeakFSOperations: INodeProperties[] = [
 				action: 'Get FirstSpirit page reference by UID',
 			},
 			{
+				name: 'Delete FirstSpirit Page Reference',
+				value: 'deletePageReference',
+				action: 'Delete FirstSpirit page reference',
+			},
+			{
+				name: 'Rename FirstSpirit Page Reference',
+				value: 'renamePageReference',
+				action: 'Rename FirstSpirit page reference',
+			},
+			{
+				name: 'Execute Actions On Page Reference',
+				value: 'executeActionsOnPageReference',
+				action: 'Execute actions on page reference',
+			},
+			{
+				name: 'Get Page Reference Settings',
+				value: 'getPageReferenceSettings',
+				action: 'Get settings for page reference',
+			},
+			{
+				name: 'Update Page Reference Settings',
+				value: 'updatePageReferenceSettings',
+				action: 'Update settings for page reference',
+			},
+			{
+				name: 'Get Page Reference Revisions',
+				value: 'getPageReferenceRevisions',
+				action: 'Get all revisions of page reference',
+			},
+			{
+				name: 'Get Page Reference Revision By ID',
+				value: 'getPageReferenceRevisionById',
+				action: 'Get single revision of page reference',
+			},
+			{
+				name: 'List Document Groups',
+				value: 'listDocumentGroups',
+				action: 'List document groups in project',
+			},
+			{
+				name: 'Create Document Group',
+				value: 'createDocumentGroup',
+				action: 'Create document group',
+			},
+			{
+				name: 'Delete Document Group',
+				value: 'deleteDocumentGroup',
+				action: 'Delete document group',
+			},
+			{
 				name: 'List FirstSpirit Section Templates',
 				value: 'listSectionTemplates',
 				action: 'List FirstSpirit section templates',

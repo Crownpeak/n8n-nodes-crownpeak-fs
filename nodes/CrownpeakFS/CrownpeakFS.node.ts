@@ -213,6 +213,56 @@ export class CrownpeakFS implements INodeType {
 						value: 'getPageReferenceByUid',
 						action: 'Get page reference by UID',
 					},
+					{
+						name: 'Delete Page Reference',
+						value: 'deletePageReference',
+						action: 'Delete page reference',
+					},
+					{
+						name: 'Rename Page Reference',
+						value: 'renamePageReference',
+						action: 'Rename page reference',
+					},
+					{
+						name: 'Execute Actions On Page Reference',
+						value: 'executeActionsOnPageReference',
+						action: 'Execute actions on page reference',
+					},
+					{
+						name: 'Get Page Reference Settings',
+						value: 'getPageReferenceSettings',
+						action: 'Get page reference settings',
+					},
+					{
+						name: 'Update Page Reference Settings',
+						value: 'updatePageReferenceSettings',
+						action: 'Update page reference settings',
+					},
+					{
+						name: 'Get Page Reference Revisions',
+						value: 'getPageReferenceRevisions',
+						action: 'Get all revisions of page reference',
+					},
+					{
+						name: 'Get Page Reference Revision By ID',
+						value: 'getPageReferenceRevisionById',
+						action: 'Get single revision of page reference',
+					},
+					{
+						name: 'List Document Groups',
+						value: 'listDocumentGroups',
+						action: 'List document groups',
+					},
+					{
+						name: 'Create Document Group',
+						value: 'createDocumentGroup',
+						action: 'Create document group',
+					},
+					{
+						name: 'Delete Document Group',
+						value: 'deleteDocumentGroup',
+						action: 'Delete document group',
+					},
 				],
 				default: 'listPageReferences',
 			},
@@ -398,11 +448,50 @@ export class CrownpeakFS implements INodeType {
 				displayOptions: {
 					show: {
 						resource: ['pageReference'],
-						operation: ['getPageReferenceByUid'],
+						operation: [
+							'getPageReferenceByUid',
+							'deletePageReference',
+							'renamePageReference',
+							'executeActionsOnPageReference',
+							'getPageReferenceSettings',
+							'updatePageReferenceSettings',
+							'getPageReferenceRevisions',
+							'getPageReferenceRevisionById',
+						],
 					},
 				},
 				placeholder: 'Enter the page reference UID',
 				description: 'The UID of the page reference to retrieve',
+			},
+			{
+				displayName: 'Page Reference Revision ID',
+				name: 'pageReferenceRevisionId',
+				type: 'string',
+				required: true,
+				default: '',
+				displayOptions: {
+					show: {
+						resource: ['pageReference'],
+						operation: ['getPageReferenceRevisionById'],
+					},
+				},
+				placeholder: 'Enter the revision ID',
+				description: 'The ID of the revision to retrieve',
+			},
+			{
+				displayName: 'Document Group UID',
+				name: 'documentGroupUid',
+				type: 'string',
+				required: true,
+				default: '',
+				displayOptions: {
+					show: {
+						resource: ['pageReference'],
+						operation: ['deleteDocumentGroup'],
+					},
+				},
+				placeholder: 'Enter the document group UID',
+				description: 'The UID of the document group to delete',
 			},
 			{
 				displayName: 'Medium UID',
@@ -641,6 +730,10 @@ export class CrownpeakFS implements INodeType {
 							'updateInputElementOfSectionForm',
 							'createPage',
 							'createPageReference',
+							'executeActionsOnPageReference',
+							'renamePageReference',
+							'updatePageReferenceSettings',
+							'createDocumentGroup',
 							'executeScript',
 							'createSectionTemplate',
 							'createPageTemplate',
@@ -836,6 +929,83 @@ export class CrownpeakFS implements INodeType {
 					const pageReferenceUid = this.getNodeParameter('pageReferenceUid', i) as string;
 					url = `${baseUrl}/v1/projects/${id}/page-references/${pageReferenceUid}`;
 					method = 'GET';
+					break;
+				}
+				case 'deletePageReference': {
+					const id = this.getNodeParameter('projectId', i) as string;
+					const pageReferenceUid = this.getNodeParameter('pageReferenceUid', i) as string;
+					url = `${baseUrl}/v1/projects/${id}/page-references/${pageReferenceUid}`;
+					method = 'DELETE';
+					break;
+				}
+				case 'renamePageReference': {
+					const id = this.getNodeParameter('projectId', i) as string;
+					const pageReferenceUid = this.getNodeParameter('pageReferenceUid', i) as string;
+					const content = this.getNodeParameter('content', i) as string;
+					url = `${baseUrl}/v1/projects/${id}/page-references/${pageReferenceUid}/rename`;
+					body = JSON.parse(content);
+					method = 'PATCH';
+					break;
+				}
+				case 'executeActionsOnPageReference': {
+					const id = this.getNodeParameter('projectId', i) as string;
+					const pageReferenceUid = this.getNodeParameter('pageReferenceUid', i) as string;
+					const content = this.getNodeParameter('content', i) as string;
+					url = `${baseUrl}/v1/projects/${id}/page-references/${pageReferenceUid}/actions`;
+					body = JSON.parse(content);
+					method = 'POST';
+					break;
+				}
+				case 'getPageReferenceSettings': {
+					const id = this.getNodeParameter('projectId', i) as string;
+					const pageReferenceUid = this.getNodeParameter('pageReferenceUid', i) as string;
+					url = `${baseUrl}/v1/projects/${id}/page-references/${pageReferenceUid}/settings`;
+					method = 'GET';
+					break;
+				}
+				case 'updatePageReferenceSettings': {
+					const id = this.getNodeParameter('projectId', i) as string;
+					const pageReferenceUid = this.getNodeParameter('pageReferenceUid', i) as string;
+					const content = this.getNodeParameter('content', i) as string;
+					url = `${baseUrl}/v1/projects/${id}/page-references/${pageReferenceUid}/settings`;
+					body = JSON.parse(content);
+					method = 'PATCH';
+					break;
+				}
+				case 'getPageReferenceRevisions': {
+					const id = this.getNodeParameter('projectId', i) as string;
+					const pageReferenceUid = this.getNodeParameter('pageReferenceUid', i) as string;
+					url = `${baseUrl}/v1/projects/${id}/page-references/${pageReferenceUid}/revisions/`;
+					method = 'GET';
+					break;
+				}
+				case 'getPageReferenceRevisionById': {
+					const id = this.getNodeParameter('projectId', i) as string;
+					const pageReferenceUid = this.getNodeParameter('pageReferenceUid', i) as string;
+					const revisionId = this.getNodeParameter('pageReferenceRevisionId', i) as string;
+					url = `${baseUrl}/v1/projects/${id}/page-references/${pageReferenceUid}/revisions/${revisionId}`;
+					method = 'GET';
+					break;
+				}
+				case 'listDocumentGroups': {
+					const id = this.getNodeParameter('projectId', i) as string;
+					url = `${baseUrl}/v1/projects/${id}/page-references/document-groups/`;
+					method = 'GET';
+					break;
+				}
+				case 'createDocumentGroup': {
+					const id = this.getNodeParameter('projectId', i) as string;
+					const content = this.getNodeParameter('content', i) as string;
+					url = `${baseUrl}/v1/projects/${id}/page-references/document-groups/`;
+					body = JSON.parse(content);
+					method = 'POST';
+					break;
+				}
+				case 'deleteDocumentGroup': {
+					const id = this.getNodeParameter('projectId', i) as string;
+					const documentGroupUid = this.getNodeParameter('documentGroupUid', i) as string;
+					url = `${baseUrl}/v1/projects/${id}/page-references/document-groups/${documentGroupUid}`;
+					method = 'DELETE';
 					break;
 				}
 				case 'listSectionTemplates': {
