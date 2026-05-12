@@ -673,6 +673,91 @@ export const crownpeakFSOperations: INodeProperties[] = [
 				value: 'setFormatTemplateGom',
 				action: 'Set the GOM definition of a FirstSpirit format template',
 			},
+			{
+				name: 'Get Link Template GOM Form',
+				value: 'getLinkTemplateGomForm',
+				action: 'Get the GOM form definition of a FirstSpirit link template',
+			},
+			{
+				name: 'Delete FirstSpirit Page',
+				value: 'deletePage',
+				action: 'Delete a FirstSpirit page',
+			},
+			{
+				name: 'Rename FirstSpirit Page',
+				value: 'renamePage',
+				action: 'Rename a FirstSpirit page',
+			},
+			{
+				name: 'Get FirstSpirit Page Usages',
+				value: 'getPageUsages',
+				action: 'Get usages of a FirstSpirit page',
+			},
+			{
+				name: 'Get FirstSpirit Page Revisions',
+				value: 'getPageRevisions',
+				action: 'Get all revisions of a FirstSpirit page',
+			},
+			{
+				name: 'Get FirstSpirit Page Revision By ID',
+				value: 'getPageRevisionById',
+				action: 'Get a single revision of a FirstSpirit page by ID',
+			},
+			{
+				name: 'Get Metadata Form Of FirstSpirit Page',
+				value: 'getPageMetadataForm',
+				action: 'Get metadata form of a FirstSpirit page',
+			},
+			{
+				name: 'Get Metadata Editor Of FirstSpirit Page',
+				value: 'getPageMetadataEditor',
+				action: 'Get a specific metadata editor of a FirstSpirit page',
+			},
+			{
+				name: 'Update Metadata Editor Of FirstSpirit Page',
+				value: 'updatePageMetadataEditor',
+				action: 'Update a specific metadata editor of a FirstSpirit page',
+			},
+			{
+				name: 'Get Metadata Editor Of FirstSpirit Page By Language',
+				value: 'getPageMetadataEditorByLanguage',
+				action: 'Get a specific metadata editor of a FirstSpirit page by language',
+			},
+			{
+				name: 'Update Metadata Editor Of FirstSpirit Page By Language',
+				value: 'updatePageMetadataEditorByLanguage',
+				action: 'Update a specific metadata editor of a FirstSpirit page by language',
+			},
+			{
+				name: 'Get Input Element Of Form By Language',
+				value: 'getInputElementOfFormByLanguage',
+				action: 'Get the specific input element of a page form by language',
+			},
+			{
+				name: 'Update Input Element Of Form By Language',
+				value: 'updateInputElementOfFormByLanguage',
+				action: 'Update the specific input element of a page form by language',
+			},
+			{
+				name: 'Delete Section From Body',
+				value: 'deleteSectionFromBody',
+				action: 'Delete a section from a body of a FirstSpirit page',
+			},
+			{
+				name: 'Rename Section',
+				value: 'renameSection',
+				action: 'Rename a section on a FirstSpirit page',
+			},
+			{
+				name: 'Get Input Element Of Section Form By Language',
+				value: 'getInputElementOfSectionFormByLanguage',
+				action: 'Get the specific input element of a section form by language',
+			},
+			{
+				name: 'Update Input Element Of Section Form By Language',
+				value: 'updateInputElementOfSectionFormByLanguage',
+				action: 'Update the specific input element of a section form by language',
+			},
 		],
 		default: 'listProjects',
 	},

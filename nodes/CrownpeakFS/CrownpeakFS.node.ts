@@ -393,6 +393,86 @@ export class CrownpeakFS implements INodeType {
 						value: 'getInputElementsOfSectionFormFromPage',
 						action: 'Get input elements of section form from page',
 					},
+					{
+						name: 'Delete Page',
+						value: 'deletePage',
+						action: 'Delete page',
+					},
+					{
+						name: 'Rename Page',
+						value: 'renamePage',
+						action: 'Rename page',
+					},
+					{
+						name: 'Get Page Usages',
+						value: 'getPageUsages',
+						action: 'Get usages of page',
+					},
+					{
+						name: 'Get Page Revisions',
+						value: 'getPageRevisions',
+						action: 'Get all revisions of page',
+					},
+					{
+						name: 'Get Page Revision By ID',
+						value: 'getPageRevisionById',
+						action: 'Get single revision of page',
+					},
+					{
+						name: 'Get Page Metadata Form',
+						value: 'getPageMetadataForm',
+						action: 'Get metadata form of page',
+					},
+					{
+						name: 'Get Page Metadata Editor',
+						value: 'getPageMetadataEditor',
+						action: 'Get specific metadata editor of page',
+					},
+					{
+						name: 'Update Page Metadata Editor',
+						value: 'updatePageMetadataEditor',
+						action: 'Update specific metadata editor of page',
+					},
+					{
+						name: 'Get Page Metadata Editor By Language',
+						value: 'getPageMetadataEditorByLanguage',
+						action: 'Get specific metadata editor of page by language',
+					},
+					{
+						name: 'Update Page Metadata Editor By Language',
+						value: 'updatePageMetadataEditorByLanguage',
+						action: 'Update specific metadata editor of page by language',
+					},
+					{
+						name: 'Get Input Element Of Form By Language',
+						value: 'getInputElementOfFormByLanguage',
+						action: 'Get input element of form by language',
+					},
+					{
+						name: 'Update Input Element Of Form By Language',
+						value: 'updateInputElementOfFormByLanguage',
+						action: 'Update input element of form by language',
+					},
+					{
+						name: 'Delete Section From Body',
+						value: 'deleteSectionFromBody',
+						action: 'Delete section from body',
+					},
+					{
+						name: 'Rename Section',
+						value: 'renameSection',
+						action: 'Rename section',
+					},
+					{
+						name: 'Get Input Element Of Section Form By Language',
+						value: 'getInputElementOfSectionFormByLanguage',
+						action: 'Get input element of section form by language',
+					},
+					{
+						name: 'Update Input Element Of Section Form By Language',
+						value: 'updateInputElementOfSectionFormByLanguage',
+						action: 'Update input element of section form by language',
+					},
 				],
 				default: 'listPages',
 			},
@@ -822,6 +902,11 @@ export class CrownpeakFS implements INodeType {
 						action: 'Get the GOM definition of a link template',
 					},
 					{
+						name: 'Get Link Template GOM Form',
+						value: 'getLinkTemplateGomForm',
+						action: 'Get the form of a link template',
+					},
+					{
 						name: 'Set Link Template GOM',
 						value: 'setLinkTemplateGom',
 						action: 'Set the GOM definition of a link template',
@@ -1052,6 +1137,14 @@ export class CrownpeakFS implements INodeType {
 							'updateInputElementOfSectionForm',
 							'getInputElementOfForm',
 							'getInputElementOfSectionForm',
+							'getInputElementOfFormByLanguage',
+							'updateInputElementOfFormByLanguage',
+							'getInputElementOfSectionFormByLanguage',
+							'updateInputElementOfSectionFormByLanguage',
+							'getPageMetadataEditor',
+							'updatePageMetadataEditor',
+							'getPageMetadataEditorByLanguage',
+							'updatePageMetadataEditorByLanguage',
 						],
 					},
 				},
@@ -1090,6 +1183,10 @@ export class CrownpeakFS implements INodeType {
 							'getInputElementOfSectionForm',
 							'getBodyOfPageByName',
 							'getInputElementsOfSectionFormFromPage',
+							'deleteSectionFromBody',
+							'renameSection',
+							'getInputElementOfSectionFormByLanguage',
+							'updateInputElementOfSectionFormByLanguage',
 						],
 					},
 				},
@@ -1110,6 +1207,10 @@ export class CrownpeakFS implements INodeType {
 							'updateInputElementOfSectionForm',
 							'getInputElementOfSectionForm',
 							'getInputElementsOfSectionFormFromPage',
+							'deleteSectionFromBody',
+							'renameSection',
+							'getInputElementOfSectionFormByLanguage',
+							'updateInputElementOfSectionFormByLanguage',
 						],
 					},
 				},
@@ -1207,6 +1308,7 @@ export class CrownpeakFS implements INodeType {
 							'getLinkTemplate',
 							'deleteLinkTemplate',
 							'getLinkTemplateGom',
+							'getLinkTemplateGomForm',
 							'setLinkTemplateGom',
 							'getLinkTemplateRules',
 							'setLinkTemplateRules',
@@ -1362,6 +1464,43 @@ export class CrownpeakFS implements INodeType {
 				description: 'The ID of the revision to retrieve',
 			},
 			{
+				displayName: 'Revision ID',
+				name: 'pageRevisionId',
+				type: 'string',
+				required: true,
+				default: '',
+				displayOptions: {
+					show: {
+						resource: ['page'],
+						operation: ['getPageRevisionById'],
+					},
+				},
+				placeholder: 'Enter the revision ID',
+				description: 'The ID of the page revision to retrieve',
+			},
+			{
+				displayName: 'Language',
+				name: 'language',
+				type: 'string',
+				required: true,
+				default: '',
+				displayOptions: {
+					show: {
+						resource: ['page'],
+						operation: [
+							'getInputElementOfFormByLanguage',
+							'updateInputElementOfFormByLanguage',
+							'getInputElementOfSectionFormByLanguage',
+							'updateInputElementOfSectionFormByLanguage',
+							'getPageMetadataEditorByLanguage',
+							'updatePageMetadataEditorByLanguage',
+						],
+					},
+				},
+				placeholder: 'e.g. EN',
+				description: 'The language abbreviation',
+			},
+			{
 				displayName: 'Content',
 				name: 'content',
 				type: 'json',
@@ -1381,6 +1520,12 @@ export class CrownpeakFS implements INodeType {
 							'executeActionsOnPage',
 							'updateInputElementOfForm',
 							'updateInputElementOfSectionForm',
+							'updateInputElementOfFormByLanguage',
+							'updateInputElementOfSectionFormByLanguage',
+							'renamePage',
+							'updatePageMetadataEditor',
+							'updatePageMetadataEditorByLanguage',
+							'renameSection',
 							'createPage',
 							'createPageReference',
 							'executeActionsOnPageReference',
@@ -2762,6 +2907,218 @@ export class CrownpeakFS implements INodeType {
 					body = JSON.parse(content);
 					method = 'PUT';
 					break;
+				}
+
+				case 'getLinkTemplateGomForm': {
+					const id = this.getNodeParameter('projectId', i) as string;
+					const linkTemplateUid = this.getNodeParameter('linkTemplateUid', i) as string;
+					url = `${baseUrl}/v1/projects/${id}/templates/link-templates/${encodeURIComponent(linkTemplateUid)}/gom/form`;
+					method = 'GET';
+					break;
+				}
+
+				case 'deletePage': {
+					const id = this.getNodeParameter('projectId', i) as string;
+					const pageUid = this.getNodeParameter('pageUid', i) as string;
+					url = `${baseUrl}/v1/projects/${id}/pages/${encodeURIComponent(pageUid)}`;
+					method = 'DELETE';
+					break;
+				}
+				case 'renamePage': {
+					const id = this.getNodeParameter('projectId', i) as string;
+					const pageUid = this.getNodeParameter('pageUid', i) as string;
+					const content = this.getNodeParameter('content', i) as string;
+					url = `${baseUrl}/v1/projects/${id}/pages/${encodeURIComponent(pageUid)}/rename`;
+					body = JSON.parse(content);
+					method = 'PATCH';
+					break;
+				}
+				case 'getPageUsages': {
+					const id = this.getNodeParameter('projectId', i) as string;
+					const pageUid = this.getNodeParameter('pageUid', i) as string;
+					url = `${baseUrl}/v1/projects/${id}/pages/${encodeURIComponent(pageUid)}/usages`;
+					method = 'GET';
+					break;
+				}
+				case 'getPageRevisions': {
+					const id = this.getNodeParameter('projectId', i) as string;
+					const pageUid = this.getNodeParameter('pageUid', i) as string;
+					url = `${baseUrl}/v1/projects/${id}/pages/${encodeURIComponent(pageUid)}/revisions/`;
+					method = 'GET';
+					break;
+				}
+				case 'getPageRevisionById': {
+					const id = this.getNodeParameter('projectId', i) as string;
+					const pageUid = this.getNodeParameter('pageUid', i) as string;
+					const pageRevisionId = this.getNodeParameter('pageRevisionId', i) as string;
+					url = `${baseUrl}/v1/projects/${id}/pages/${encodeURIComponent(pageUid)}/revisions/${encodeURIComponent(pageRevisionId)}`;
+					method = 'GET';
+					break;
+				}
+
+				case 'getPageMetadataForm': {
+					const id = this.getNodeParameter('projectId', i) as string;
+					const pageUid = this.getNodeParameter('pageUid', i) as string;
+					url = `${baseUrl}/v1/projects/${id}/pages/${encodeURIComponent(pageUid)}/metadata`;
+					method = 'GET';
+					break;
+				}
+				case 'getPageMetadataEditor': {
+					const id = this.getNodeParameter('projectId', i) as string;
+					const pageUid = this.getNodeParameter('pageUid', i) as string;
+					const editorName = this.getNodeParameter('editorName', i) as string;
+					url = `${baseUrl}/v1/projects/${id}/pages/${encodeURIComponent(pageUid)}/metadata/${encodeURIComponent(editorName)}`;
+					method = 'GET';
+					break;
+				}
+				case 'updatePageMetadataEditor': {
+					const id = this.getNodeParameter('projectId', i) as string;
+					const pageUid = this.getNodeParameter('pageUid', i) as string;
+					const editorName = this.getNodeParameter('editorName', i) as string;
+					const content = this.getNodeParameter('content', i) as string;
+					url = `${baseUrl}/v1/projects/${id}/pages/${encodeURIComponent(pageUid)}/metadata/${encodeURIComponent(editorName)}`;
+					body = JSON.parse(content);
+					method = 'PATCH';
+					break;
+				}
+				case 'getPageMetadataEditorByLanguage': {
+					const id = this.getNodeParameter('projectId', i) as string;
+					const pageUid = this.getNodeParameter('pageUid', i) as string;
+					const editorName = this.getNodeParameter('editorName', i) as string;
+					const language = this.getNodeParameter('language', i) as string;
+					url = `${baseUrl}/v1/projects/${id}/pages/${encodeURIComponent(pageUid)}/metadata/${encodeURIComponent(editorName)}/${encodeURIComponent(language)}`;
+					method = 'GET';
+					break;
+				}
+				case 'updatePageMetadataEditorByLanguage': {
+					const id = this.getNodeParameter('projectId', i) as string;
+					const pageUid = this.getNodeParameter('pageUid', i) as string;
+					const editorName = this.getNodeParameter('editorName', i) as string;
+					const language = this.getNodeParameter('language', i) as string;
+					const content = this.getNodeParameter('content', i) as string;
+					url = `${baseUrl}/v1/projects/${id}/pages/${encodeURIComponent(pageUid)}/metadata/${encodeURIComponent(editorName)}/${encodeURIComponent(language)}`;
+					body = JSON.parse(content);
+					method = 'PATCH';
+					break;
+				}
+
+				case 'getInputElementOfFormByLanguage': {
+					const id = this.getNodeParameter('projectId', i) as string;
+					const pageUid = this.getNodeParameter('pageUid', i) as string;
+					const editorName = this.getNodeParameter('editorName', i) as string;
+					const language = this.getNodeParameter('language', i) as string;
+					url = `${baseUrl}/v1/projects/${id}/pages/${encodeURIComponent(pageUid)}/form/${encodeURIComponent(editorName)}/${encodeURIComponent(language)}`;
+					method = 'GET';
+					break;
+				}
+				case 'updateInputElementOfFormByLanguage': {
+					const id = this.getNodeParameter('projectId', i) as string;
+					const pageUid = this.getNodeParameter('pageUid', i) as string;
+					const editorName = this.getNodeParameter('editorName', i) as string;
+					const language = this.getNodeParameter('language', i) as string;
+					const content = this.getNodeParameter('content', i) as string;
+					const authHeader = 'Basic ' + Buffer.from(`${username}:${password}`).toString('base64');
+					const formLangUrl = `${baseUrl}/v1/projects/${id}/pages/${encodeURIComponent(pageUid)}/form/${encodeURIComponent(editorName)}/${encodeURIComponent(language)}`;
+
+					const currentEditorLang = await this.helpers.httpRequest({
+						method: 'GET',
+						url: formLangUrl,
+						headers: { Authorization: authHeader, Accept: 'application/json' },
+						json: true,
+					});
+
+					const patchBodyLang = {
+						name: currentEditorLang.name,
+						type: currentEditorLang.type,
+						...JSON.parse(content),
+					};
+
+					const patchResponseLang = await this.helpers.httpRequest({
+						method: 'PATCH',
+						url: formLangUrl,
+						headers: {
+							Authorization: authHeader,
+							'Content-Type': 'application/json',
+							Accept: 'application/json',
+						},
+						body: patchBodyLang,
+						json: true,
+					});
+
+					items[i].json = patchResponseLang;
+					continue;
+				}
+
+				case 'deleteSectionFromBody': {
+					const id = this.getNodeParameter('projectId', i) as string;
+					const pageUid = this.getNodeParameter('pageUid', i) as string;
+					const bodyName = this.getNodeParameter('bodyName', i) as string;
+					const sectionName = this.getNodeParameter('sectionName', i) as string;
+					url = `${baseUrl}/v1/projects/${id}/pages/${encodeURIComponent(pageUid)}/bodies/${encodeURIComponent(bodyName)}/sections/${encodeURIComponent(sectionName)}`;
+					method = 'DELETE';
+					break;
+				}
+				case 'renameSection': {
+					const id = this.getNodeParameter('projectId', i) as string;
+					const pageUid = this.getNodeParameter('pageUid', i) as string;
+					const bodyName = this.getNodeParameter('bodyName', i) as string;
+					const sectionName = this.getNodeParameter('sectionName', i) as string;
+					const content = this.getNodeParameter('content', i) as string;
+					url = `${baseUrl}/v1/projects/${id}/pages/${encodeURIComponent(pageUid)}/bodies/${encodeURIComponent(bodyName)}/sections/${encodeURIComponent(sectionName)}/rename`;
+					body = JSON.parse(content);
+					method = 'PATCH';
+					break;
+				}
+
+				case 'getInputElementOfSectionFormByLanguage': {
+					const id = this.getNodeParameter('projectId', i) as string;
+					const pageUid = this.getNodeParameter('pageUid', i) as string;
+					const bodyName = this.getNodeParameter('bodyName', i) as string;
+					const sectionName = this.getNodeParameter('sectionName', i) as string;
+					const editorName = this.getNodeParameter('editorName', i) as string;
+					const language = this.getNodeParameter('language', i) as string;
+					url = `${baseUrl}/v1/projects/${id}/pages/${encodeURIComponent(pageUid)}/bodies/${encodeURIComponent(bodyName)}/sections/${encodeURIComponent(sectionName)}/form/${encodeURIComponent(editorName)}/${encodeURIComponent(language)}`;
+					method = 'GET';
+					break;
+				}
+				case 'updateInputElementOfSectionFormByLanguage': {
+					const id = this.getNodeParameter('projectId', i) as string;
+					const pageUid = this.getNodeParameter('pageUid', i) as string;
+					const bodyName = this.getNodeParameter('bodyName', i) as string;
+					const sectionName = this.getNodeParameter('sectionName', i) as string;
+					const editorName = this.getNodeParameter('editorName', i) as string;
+					const language = this.getNodeParameter('language', i) as string;
+					const content = this.getNodeParameter('content', i) as string;
+					const authHeader = 'Basic ' + Buffer.from(`${username}:${password}`).toString('base64');
+					const secFormLangUrl = `${baseUrl}/v1/projects/${id}/pages/${encodeURIComponent(pageUid)}/bodies/${encodeURIComponent(bodyName)}/sections/${encodeURIComponent(sectionName)}/form/${encodeURIComponent(editorName)}/${encodeURIComponent(language)}`;
+
+					const currentSecEditorLang = await this.helpers.httpRequest({
+						method: 'GET',
+						url: secFormLangUrl,
+						headers: { Authorization: authHeader, Accept: 'application/json' },
+						json: true,
+					});
+
+					const secPatchBodyLang = {
+						name: currentSecEditorLang.name,
+						type: currentSecEditorLang.type,
+						...JSON.parse(content),
+					};
+
+					const secPatchResponseLang = await this.helpers.httpRequest({
+						method: 'PATCH',
+						url: secFormLangUrl,
+						headers: {
+							Authorization: authHeader,
+							'Content-Type': 'application/json',
+							Accept: 'application/json',
+						},
+						body: secPatchBodyLang,
+						json: true,
+					});
+
+					items[i].json = secPatchResponseLang;
+					continue;
 				}
 
 				default:
